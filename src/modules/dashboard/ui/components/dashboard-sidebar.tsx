@@ -92,7 +92,7 @@ export const DashboadSidebar = () => {
         <Sidebar>
             <SidebarHeader className="text-sidebar-accent-foreground">
                 <Link href="/" className="flex items-center gap-2 px-2 pt-2">
-                    <Image src="/logo.svg" height={36} width={36} alt="logo" />
+                    <Image src="/logo.png" height={100} width={100} alt="logo" />
                     <p className="text-2xl font-semibold">PoloSync</p>
                 </Link>
             </SidebarHeader>
