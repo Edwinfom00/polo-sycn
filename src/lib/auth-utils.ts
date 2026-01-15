@@ -29,6 +29,7 @@ export async function getCurrentUser() {
     return {
         ...session.user,
         role: userWithRole[0].role,
+        classeId: userWithRole[0].classeId,
     };
 }
 
