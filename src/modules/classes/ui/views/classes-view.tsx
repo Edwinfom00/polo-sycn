@@ -160,7 +160,7 @@ export const ClassesView = ({
                                             Gérer les filières académiques
                                         </p>
                                     </div>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex flex-col items-start gap-2">
                                         <div className="relative w-64">
                                             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                             <Input

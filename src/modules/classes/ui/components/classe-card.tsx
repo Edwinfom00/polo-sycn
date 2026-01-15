@@ -51,7 +51,7 @@ export const ClasseCard = ({ classe, studentsCount = 0, onEdit, onDelete }: Clas
                 <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center">
+                            <div className="h-12 w-12 rounded-lg bg-linear-to-br from-green-500 to-teal-600 flex items-center justify-center">
                                 <UsersIcon className="h-6 w-6 text-white" />
                             </div>
                             <div className="flex-1 min-w-0">
