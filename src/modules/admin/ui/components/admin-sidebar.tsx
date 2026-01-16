@@ -1,14 +1,13 @@
 "use client";
 
 import {
-    UsersIcon,
-    PackageIcon,
+    HomeIcon,
     ShoppingCartIcon,
     CreditCardIcon,
     TruckIcon,
+    PackageIcon,
     BarChartIcon,
-    SettingsIcon,
-    GraduationCapIcon
+    UsersIcon,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -28,33 +27,13 @@ import {
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-
-import { DashboardUserButton } from "./dashboard-user-button";
-
+import { DashboardUserButton } from "@/modules/dashboard/ui/components/dashboard-user-button";
 
 const mainMenu = [
     {
-        icon: BarChartIcon,
-        label: "Dashboard",
-        href: "/super-admin"
-    },
-];
-
-const adminMenu = [
-    {
-        icon: UsersIcon,
-        label: "Utilisateurs",
-        href: "/super-admin/admin/users"
-    },
-    {
-        icon: GraduationCapIcon,
-        label: "Classes & Filières",
-        href: "/super-admin/admin/classes"
-    },
-    {
-        icon: PackageIcon,
-        label: "Produits & Stock",
-        href: "/super-admin/admin/products"
+        icon: HomeIcon,
+        label: "Accueil",
+        href: "/admin"
     },
 ];
 
@@ -62,45 +41,49 @@ const operationsMenu = [
     {
         icon: ShoppingCartIcon,
         label: "Commandes",
-        href: "/super-admin/orders"
+        href: "/admin/commandes"
     },
     {
         icon: CreditCardIcon,
         label: "Paiements",
-        href: "/super-admin/payments"
+        href: "/admin/paiements"
     },
     {
         icon: TruckIcon,
         label: "Livraisons",
-        href: "/super-admin/deliveries"
+        href: "/admin/livraisons"
+    },
+    {
+        icon: PackageIcon,
+        label: "Stock",
+        href: "/admin/stock"
     },
     {
         icon: UsersIcon,
         label: "Étudiants",
-        href: "/super-admin/etudiants"
+        href: "/admin/etudiants"
     },
 ];
 
-const settingsMenu = [
+const reportsMenu = [
     {
-        icon: SettingsIcon,
-        label: "Paramètres",
-        href: "/super-admin/settings"
+        icon: BarChartIcon,
+        label: "Rapports",
+        href: "/admin/rapports"
     },
 ];
 
-export const DashboadSidebar = () => {
-
+export const AdminSidebar = () => {
     const pathname = usePathname();
 
     return (
         <Sidebar>
             <SidebarHeader className="text-sidebar-accent-foreground">
-                <Link href="/super-admin" className="flex items-center gap-2 px-2 pt-2">
+                <Link href="/admin" className="flex items-center gap-2 px-2 pt-2">
                     <Image src="/logo.png" height={100} width={100} alt="logo" />
                     <div>
                         <p className="text-2xl font-semibold">PoloSync</p>
-                        <p className="text-xs text-muted-foreground">Super Admin</p>
+                        <p className="text-xs text-muted-foreground">Administration</p>
                     </div>
                 </Link>
             </SidebarHeader>
@@ -117,39 +100,7 @@ export const DashboadSidebar = () => {
                                     <SidebarMenuButton
                                         asChild
                                         className={cn(
-                                            "h-10 hover:bg-linear-to-r/oklch border border-transparent hover:b0rder-[#5D6B68] from-sidebar-accent from-5% via-30% via-sidebar/50 to-sidebar/50",
-                                            pathname === item.href && "bg-linear-to-r/oklch border-[#5D6B68]/10"
-                                        )}
-                                        isActive={pathname === item.href}
-                                    >
-                                        <Link href={item.href}>
-                                            <item.icon className="size-5" />
-                                            <span className="text-sm font-medium tracking-tight">{item.label}</span>
-                                        </Link>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
-
-                <div className="px-4 py-2">
-                    <Separator className="opacity-10 text-[#5D6B68]" />
-                </div>
-
-                {/* Menu administration */}
-                <SidebarGroup>
-                    <SidebarGroupLabel className="text-xs text-muted-foreground px-2">
-                        Administration
-                    </SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {adminMenu.map((item) => (
-                                <SidebarMenuItem key={item.href}>
-                                    <SidebarMenuButton
-                                        asChild
-                                        className={cn(
-                                            "h-10 hover:bg-linear-to-r/oklch border border-transparent hover:b0rder-[#5D6B68] from-sidebar-accent from-5% via-30% via-sidebar/50 to-sidebar/50",
+                                            "h-10 hover:bg-linear-to-r/oklch border border-transparent hover:border-[#5D6B68] from-sidebar-accent from-5% via-30% via-sidebar/50 to-sidebar/50",
                                             pathname === item.href && "bg-linear-to-r/oklch border-[#5D6B68]/10"
                                         )}
                                         isActive={pathname === item.href}
@@ -181,10 +132,10 @@ export const DashboadSidebar = () => {
                                     <SidebarMenuButton
                                         asChild
                                         className={cn(
-                                            "h-10 hover:bg-linear-to-r/oklch border border-transparent hover:b0rder-[#5D6B68] from-sidebar-accent from-5% via-30% via-sidebar/50 to-sidebar/50",
-                                            pathname === item.href && "bg-linear-to-r/oklch border-[#5D6B68]/10"
+                                            "h-10 hover:bg-linear-to-r/oklch border border-transparent hover:border-[#5D6B68] from-sidebar-accent from-5% via-30% via-sidebar/50 to-sidebar/50",
+                                            pathname.startsWith(item.href) && "bg-linear-to-r/oklch border-[#5D6B68]/10"
                                         )}
-                                        isActive={pathname === item.href}
+                                        isActive={pathname.startsWith(item.href)}
                                     >
                                         <Link href={item.href}>
                                             <item.icon className="size-5" />
@@ -201,16 +152,16 @@ export const DashboadSidebar = () => {
                     <Separator className="opacity-10 text-[#5D6B68]" />
                 </div>
 
-                {/* Menu paramètres */}
+                {/* Menu rapports */}
                 <SidebarGroup>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {settingsMenu.map((item) => (
+                            {reportsMenu.map((item) => (
                                 <SidebarMenuItem key={item.href}>
                                     <SidebarMenuButton
                                         asChild
                                         className={cn(
-                                            "h-10 hover:bg-linear-to-r/oklch border border-transparent hover:b0rder-[#5D6B68] from-sidebar-accent from-5% via-30% via-sidebar/50 to-sidebar/50",
+                                            "h-10 hover:bg-linear-to-r/oklch border border-transparent hover:border-[#5D6B68] from-sidebar-accent from-5% via-30% via-sidebar/50 to-sidebar/50",
                                             pathname === item.href && "bg-linear-to-r/oklch border-[#5D6B68]/10"
                                         )}
                                         isActive={pathname === item.href}
@@ -230,5 +181,5 @@ export const DashboadSidebar = () => {
                 <DashboardUserButton />
             </SidebarFooter>
         </Sidebar>
-    )
-}
+    );
+};

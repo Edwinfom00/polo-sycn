@@ -379,21 +379,40 @@ export async function validerCommande(data: z.infer<typeof commandeValidateSchem
                 .limit(1);
 
             if (stockItem.length === 0) {
-                return {
-                    success: false,
-                    message: `Stock non trouvé pour un des articles`,
-                };
+                // Créer automatiquement l'entrée de stock si elle n'existe pas
+                await db.insert(stock).values({
+                    produitId: ligne.produitId,
+                    tailleId: ligne.tailleId,
+                    couleurId: ligne.couleurId,
+                    quantiteDisponible: 0,
+                    quantiteReservee: ligne.quantite,
+                    quantiteLivree: 0,
+                    seuilAlerte: 10,
+                });
+
+                // Note : Le stock disponible est à 0, donc la commande est validée mais en attente de réapprovisionnement
+                continue;
             }
 
             const currentStock = stockItem[0];
+
+            // Vérifier si le stock est suffisant
             if (currentStock.quantiteDisponible < ligne.quantite) {
-                return {
-                    success: false,
-                    message: `Stock insuffisant pour un des articles`,
-                };
+                // Réserver quand même mais marquer comme en attente de stock
+                await db
+                    .update(stock)
+                    .set({
+                        quantiteReservee: currentStock.quantiteReservee + ligne.quantite,
+                        updatedAt: new Date(),
+                    })
+                    .where(eq(stock.id, currentStock.id));
+
+                // Note : On continue la validation même si le stock est insuffisant
+                // L'admin devra réapprovisionner avant la livraison
+                continue;
             }
 
-            // Réserver le stock
+            // Réserver le stock normalement
             await db
                 .update(stock)
                 .set({

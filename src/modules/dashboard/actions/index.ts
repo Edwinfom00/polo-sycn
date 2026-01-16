@@ -16,59 +16,87 @@ export async function getDashboardStats() {
         }
 
         const isAdmin = currentUser.role === 'ADMIN' || currentUser.role === 'SUPER_ADMIN';
-        const isSuperAdmin = currentUser.role === 'SUPER_ADMIN';
+        const isDelegue = currentUser.role === 'DELEGUE';
+        const isEtudiant = currentUser.role === 'ETUDIANT';
 
-        // Stats utilisateurs (seulement pour SUPER_ADMIN)
-        let usersStats = { total: 0, admins: 0, delegues: 0, etudiants: 0 };
-        if (isSuperAdmin) {
-            const [total, admins, delegues, etudiants] = await Promise.all([
-                db.select({ count: sql<number>`count(*)` }).from(user),
-                db.select({ count: sql<number>`count(*)` }).from(user).where(eq(user.role, 'ADMIN')),
-                db.select({ count: sql<number>`count(*)` }).from(user).where(eq(user.role, 'DELEGUE')),
-                db.select({ count: sql<number>`count(*)` }).from(user).where(eq(user.role, 'ETUDIANT')),
+        // Stats commandes (filtrées selon le rôle)
+        let totalCommandes, commandesEnAttente, commandesPayees, commandesValidees, commandesLivrees;
+
+        if (isEtudiant) {
+            [totalCommandes, commandesEnAttente, commandesPayees, commandesValidees, commandesLivrees] = await Promise.all([
+                db.select({ count: sql<number>`count(*)` }).from(commande).where(eq(commande.etudiantId, currentUser.id)),
+                db.select({ count: sql<number>`count(*)` }).from(commande).where(and(eq(commande.etudiantId, currentUser.id), eq(commande.statut, 'EN_ATTENTE'))),
+                db.select({ count: sql<number>`count(*)` }).from(commande).where(and(eq(commande.etudiantId, currentUser.id), eq(commande.statut, 'PAYE'))),
+                db.select({ count: sql<number>`count(*)` }).from(commande).where(and(eq(commande.etudiantId, currentUser.id), eq(commande.statut, 'VALIDE'))),
+                db.select({ count: sql<number>`count(*)` }).from(commande).where(and(eq(commande.etudiantId, currentUser.id), eq(commande.statut, 'LIVRE'))),
+            ]);
+        } else if (isDelegue && currentUser.classeId) {
+            [totalCommandes, commandesEnAttente, commandesPayees, commandesValidees, commandesLivrees] = await Promise.all([
+                db.select({ count: sql<number>`count(*)` }).from(commande).where(eq(commande.classeId, currentUser.classeId)),
+                db.select({ count: sql<number>`count(*)` }).from(commande).where(and(eq(commande.classeId, currentUser.classeId), eq(commande.statut, 'EN_ATTENTE'))),
+                db.select({ count: sql<number>`count(*)` }).from(commande).where(and(eq(commande.classeId, currentUser.classeId), eq(commande.statut, 'PAYE'))),
+                db.select({ count: sql<number>`count(*)` }).from(commande).where(and(eq(commande.classeId, currentUser.classeId), eq(commande.statut, 'VALIDE'))),
+                db.select({ count: sql<number>`count(*)` }).from(commande).where(and(eq(commande.classeId, currentUser.classeId), eq(commande.statut, 'LIVRE'))),
+            ]);
+        } else {
+            [totalCommandes, commandesEnAttente, commandesPayees, commandesValidees, commandesLivrees] = await Promise.all([
+                db.select({ count: sql<number>`count(*)` }).from(commande),
+                db.select({ count: sql<number>`count(*)` }).from(commande).where(eq(commande.statut, 'EN_ATTENTE')),
+                db.select({ count: sql<number>`count(*)` }).from(commande).where(eq(commande.statut, 'PAYE')),
+                db.select({ count: sql<number>`count(*)` }).from(commande).where(eq(commande.statut, 'VALIDE')),
+                db.select({ count: sql<number>`count(*)` }).from(commande).where(eq(commande.statut, 'LIVRE')),
+            ]);
+        }
+
+        // Stats paiements (seulement pour admin)
+        let paiementsStats = { total: 0, enAttente: 0, montantTotal: 0 };
+        if (isAdmin || isDelegue) {
+            const [totalPaiements, paiementsEnAttente, montantTotal] = await Promise.all([
+                db.select({ count: sql<number>`count(*)` }).from(paiement),
+                db.select({ count: sql<number>`count(*)` }).from(paiement).where(eq(paiement.statut, 'EN_ATTENTE')),
+                db.select({ total: sql<number>`SUM(CAST(${paiement.montant} AS DECIMAL))` }).from(paiement).where(eq(paiement.statut, 'PAYE')),
             ]);
 
-            usersStats = {
-                total: Number(total[0]?.count || 0),
-                admins: Number(admins[0]?.count || 0),
-                delegues: Number(delegues[0]?.count || 0),
-                etudiants: Number(etudiants[0]?.count || 0),
+            paiementsStats = {
+                total: Number(totalPaiements[0]?.count || 0),
+                enAttente: Number(paiementsEnAttente[0]?.count || 0),
+                montantTotal: Number(montantTotal[0]?.total || 0),
             };
         }
 
-        // Stats commandes
-        const [totalCommandes, commandesEnAttente, commandesPayees, commandesValidees, commandesLivrees] = await Promise.all([
-            db.select({ count: sql<number>`count(*)` }).from(commande),
-            db.select({ count: sql<number>`count(*)` }).from(commande).where(eq(commande.statut, 'EN_ATTENTE')),
-            db.select({ count: sql<number>`count(*)` }).from(commande).where(eq(commande.statut, 'PAYE')),
-            db.select({ count: sql<number>`count(*)` }).from(commande).where(eq(commande.statut, 'VALIDE')),
-            db.select({ count: sql<number>`count(*)` }).from(commande).where(eq(commande.statut, 'LIVRE')),
-        ]);
+        // Stats livraisons (seulement pour admin)
+        let livraisonsStats = { total: 0, aujourdhui: 0 };
+        if (isAdmin || isDelegue) {
+            const [totalLivraisons, livraisonsAujourdhui] = await Promise.all([
+                db.select({ count: sql<number>`count(*)` }).from(livraison),
+                db.select({ count: sql<number>`count(*)` }).from(livraison).where(sql`DATE(${livraison.livreAt}) = CURRENT_DATE`),
+            ]);
 
-        // Stats paiements
-        const [totalPaiements, paiementsEnAttente, montantTotal] = await Promise.all([
-            db.select({ count: sql<number>`count(*)` }).from(paiement),
-            db.select({ count: sql<number>`count(*)` }).from(paiement).where(eq(paiement.statut, 'EN_ATTENTE')),
-            db.select({ total: sql<number>`SUM(CAST(${paiement.montant} AS DECIMAL))` }).from(paiement).where(eq(paiement.statut, 'PAYE')),
-        ]);
+            livraisonsStats = {
+                total: Number(totalLivraisons[0]?.count || 0),
+                aujourdhui: Number(livraisonsAujourdhui[0]?.count || 0),
+            };
+        }
 
-        // Stats livraisons
-        const [totalLivraisons, livraisonsAujourdhui] = await Promise.all([
-            db.select({ count: sql<number>`count(*)` }).from(livraison),
-            db.select({ count: sql<number>`count(*)` }).from(livraison).where(sql`DATE(${livraison.livreAt}) = CURRENT_DATE`),
-        ]);
+        // Stats stock (seulement pour admin)
+        let stockStats = { produitsActifs: 0, total: 0, faible: 0 };
+        if (isAdmin) {
+            const [produitsActifs, stockTotal, stockFaible] = await Promise.all([
+                db.select({ count: sql<number>`count(*)` }).from(produit).where(eq(produit.actif, true)),
+                db.select({ total: sql<number>`SUM(${stock.quantiteDisponible})` }).from(stock),
+                db.select({ count: sql<number>`count(*)` }).from(stock).where(sql`${stock.quantiteDisponible} <= ${stock.seuilAlerte}`),
+            ]);
 
-        // Stats stock
-        const [produitsActifs, stockTotal, stockFaible] = await Promise.all([
-            db.select({ count: sql<number>`count(*)` }).from(produit).where(eq(produit.actif, true)),
-            db.select({ total: sql<number>`SUM(${stock.quantiteDisponible})` }).from(stock),
-            db.select({ count: sql<number>`count(*)` }).from(stock).where(sql`${stock.quantiteDisponible} <= ${stock.seuilAlerte}`),
-        ]);
+            stockStats = {
+                produitsActifs: Number(produitsActifs[0]?.count || 0),
+                total: Number(stockTotal[0]?.total || 0),
+                faible: Number(stockFaible[0]?.count || 0),
+            };
+        }
 
         return {
             success: true,
             data: {
-                users: usersStats,
                 commandes: {
                     total: Number(totalCommandes[0]?.count || 0),
                     enAttente: Number(commandesEnAttente[0]?.count || 0),
@@ -76,20 +104,9 @@ export async function getDashboardStats() {
                     validees: Number(commandesValidees[0]?.count || 0),
                     livrees: Number(commandesLivrees[0]?.count || 0),
                 },
-                paiements: {
-                    total: Number(totalPaiements[0]?.count || 0),
-                    enAttente: Number(paiementsEnAttente[0]?.count || 0),
-                    montantTotal: Number(montantTotal[0]?.total || 0),
-                },
-                livraisons: {
-                    total: Number(totalLivraisons[0]?.count || 0),
-                    aujourdhui: Number(livraisonsAujourdhui[0]?.count || 0),
-                },
-                stock: {
-                    produitsActifs: Number(produitsActifs[0]?.count || 0),
-                    total: Number(stockTotal[0]?.total || 0),
-                    faible: Number(stockFaible[0]?.count || 0),
-                },
+                paiements: paiementsStats,
+                livraisons: livraisonsStats,
+                stock: stockStats,
             },
         };
     } catch (error) {

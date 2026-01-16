@@ -24,9 +24,9 @@ import { useRouter } from 'next/navigation';
 
 
 const formSchema = z.object({
-    email: z.string().email(),
+    email: z.string().email('Email invalide'),
     password: z.string().min(1, {
-        message: 'Password is required',
+        message: 'Le mot de passe est requis',
     }),
 })
 
@@ -75,10 +75,10 @@ export const SignInView = () => {
                             <div className='flex flex-col gap-6'>
                                 <div className='flex flex-col items-center text-center'>
                                     <h1 className="text-2xl font-bold">
-                                        Welcome Back
+                                        Bon retour
                                     </h1>
                                     <p className='text-muted-foreground text-balance'>
-                                        Login to your account
+                                        Connectez-vous à votre compte
                                     </p>
                                 </div>
                                 <div className="grid gap-3">
@@ -89,7 +89,7 @@ export const SignInView = () => {
                                             <FormItem>
                                                 <FormLabel>Email</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="m@example.com" type='email' {...field} />
+                                                    <Input placeholder="jean.dupont@example.com" type='email' {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -102,7 +102,7 @@ export const SignInView = () => {
                                         name="password"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Password</FormLabel>
+                                                <FormLabel>Mot de passe</FormLabel>
                                                 <FormControl>
                                                     <Input placeholder="********" type='password' {...field} />
                                                 </FormControl>
@@ -113,7 +113,7 @@ export const SignInView = () => {
                                 </div>
                                 {!!error && (
                                     <Alert className='bg-destructive/10 border-none'>
-                                        <OctagonAlertIcon className='h-4 w-4 !text-destructive' />
+                                        <OctagonAlertIcon className='h-4 w-4 text-destructive!' />
                                         <AlertTitle>{error}</AlertTitle>
                                     </Alert>
                                 )}
@@ -122,8 +122,14 @@ export const SignInView = () => {
                                     type='submit'
                                     disabled={pending}
                                 >
-                                    {pending ? 'Signing In...' : 'Sign In'}
+                                    {pending ? 'Connexion...' : 'Se connecter'}
                                 </Button>
+                                <div className='text-center text-sm'>
+                                    Pas encore de compte ?{' '}
+                                    <Link href="/sign-up" className='underline underline-offset-4 hover:text-primary'>
+                                        S&apos;inscrire
+                                    </Link>
+                                </div>
                             </div>
                         </form>
                     </Form>
@@ -136,10 +142,9 @@ export const SignInView = () => {
                     </div>
                 </CardContent>
             </Card>
-            <div className='text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4'>
-                By clinking continue, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+            <div className='text-muted-foreground text-center text-xs text-balance'>
+                En continuant, vous acceptez nos <a href="#" className='underline underline-offset-4 hover:text-primary'>Conditions d&apos;utilisation</a> et notre <a href="#" className='underline underline-offset-4 hover:text-primary'>Politique de confidentialité</a>
             </div>
         </div>
     )
 }
-

@@ -2,19 +2,13 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 // Routes publiques (accessibles sans authentification)
-const publicRoutes = ['/sign-in', '/sign-up', '/unauthorized'];
-
-// Routes protégées par rôle
-const roleProtectedRoutes = {
-    '/admin': ['SUPER_ADMIN', 'ADMIN'],
-    '/super-admin': ['SUPER_ADMIN'],
-};
+const publicRoutes = ['/', '/sign-in', '/sign-up', '/unauthorized'];
 
 export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // Laisser passer les routes publiques
-    if (publicRoutes.some(route => pathname.startsWith(route))) {
+    if (publicRoutes.some(route => pathname === route)) {
         return NextResponse.next();
     }
 
@@ -30,6 +24,7 @@ export function middleware(request: NextRequest) {
 
     // Pour les autres routes, la vérification se fait côté serveur
     // via requireAuth() ou requireRole() dans les pages
+    // Les redirections par rôle sont gérées dans les layouts
     return NextResponse.next();
 }
 
