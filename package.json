@@ -14,7 +14,9 @@
     "seed:admin": "tsx scripts/seed-super-admin.ts",
     "seed:base": "tsx scripts/seed-base-data.ts",
     "seed:all": "npm run seed:admin && npm run seed:base",
-    "reset:admin": "tsx scripts/reset-super-admin.ts"
+    "reset:admin": "tsx scripts/reset-super-admin.ts",
+    "db:clean": "tsx scripts/clean-database.ts",
+    "db:clean:safe": "tsx scripts/clean-database-safe.ts"
   },
   "dependencies": {
     "@dicebear/collection": "^9.2.4",

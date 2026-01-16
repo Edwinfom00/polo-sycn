@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/db";
-import { user, account } from "@/db/schema";
-import { eq, count, or, like } from "drizzle-orm";
+import { user, account, livraison, commande } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { userInsertSchema, userUpdateSchema, userDeleteSchema } from "../schemas";
@@ -85,6 +85,49 @@ export async function updateUser(data: unknown) {
 export async function deleteUser(data: unknown) {
     try {
         const validated = userDeleteSchema.parse(data);
+
+        // Vérifier s'il y a des livraisons associées
+        const livraisonsAssociees = await db
+            .select()
+            .from(livraison)
+            .where(eq(livraison.livrePar, validated.id))
+            .limit(1);
+
+        if (livraisonsAssociees.length > 0) {
+            return {
+                success: false,
+                message: 'Impossible de supprimer cet utilisateur car il a effectué des livraisons'
+            };
+        }
+
+        // Vérifier s'il y a des commandes validées par cet utilisateur
+        const commandesValidees = await db
+            .select()
+            .from(commande)
+            .where(eq(commande.valideParId, validated.id))
+            .limit(1);
+
+        if (commandesValidees.length > 0) {
+            return {
+                success: false,
+                message: 'Impossible de supprimer cet utilisateur car il a validé des commandes'
+            };
+        }
+
+        // Vérifier si l'utilisateur est délégué d'une classe
+        const { classe } = await import("@/db/schema");
+        const classesDeléguées = await db
+            .select()
+            .from(classe)
+            .where(eq(classe.delegueId, validated.id))
+            .limit(1);
+
+        if (classesDeléguées.length > 0) {
+            return {
+                success: false,
+                message: 'Impossible de supprimer cet utilisateur car il est délégué d\'une classe'
+            };
+        }
 
         // Supprimer les comptes associés
         await db.delete(account).where(eq(account.userId, validated.id));
