@@ -104,7 +104,7 @@ export async function deleteUser(data: unknown) {
         const commandesValidees = await db
             .select()
             .from(commande)
-            .where(eq(commande.valideParId, validated.id))
+            .where(eq(commande.validePar, validated.id))
             .limit(1);
 
         if (commandesValidees.length > 0) {

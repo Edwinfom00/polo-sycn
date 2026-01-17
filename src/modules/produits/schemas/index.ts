@@ -27,7 +27,7 @@ export const stockInsertSchema = z.object({
     tailleId: z.string().min(1, "La taille est requise"),
     couleurId: z.string().min(1, "La couleur est requise"),
     quantiteDisponible: z.number().int().min(0, "La quantité doit être positive"),
-    seuilAlerte: z.number().int().min(0, "Le seuil doit être positif").default(10),
+    seuilAlerte: z.number().int().min(0, "Le seuil doit être positif"),
 });
 
 export const stockUpdateSchema = z.object({

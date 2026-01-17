@@ -76,7 +76,6 @@ export const LivraisonForm = ({
         startTransition(async () => {
             const result = await createLivraison({
                 commandeId,
-                lignes: lignesALivrer,
                 notes: notes || null,
             });
 
