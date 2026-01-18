@@ -21,7 +21,7 @@ interface Paiement {
     id: string;
     montant: string;
     statut: string;
-    methodePaiement: string;
+    methodePaiement: string | null;
     reference: string | null;
     notes: string | null;
     createdAt: Date;
@@ -49,12 +49,16 @@ const getStatusBadge = (statut: string) => {
     }
 };
 
-const getMethodeBadge = (methode: string) => {
+const getMethodeBadge = (methode: string | null) => {
+    if (!methode) {
+        return <Badge variant="outline">Non spécifié</Badge>;
+    }
+
     switch (methode) {
         case 'ESPECES':
             return <Badge variant="outline">Espèces</Badge>;
-        case 'MOBILE_MONEY':
-            return <Badge variant="outline" className="bg-orange-50">Mobile Money</Badge>;
+        case 'MTN_MONEY':
+            return <Badge variant="outline" className="bg-orange-50">MTN Money</Badge>;
         case 'ORANGE_MONEY':
             return <Badge variant="outline" className="bg-blue-50">Orange Money</Badge>;
         default:
