@@ -365,3 +365,35 @@ export async function getCommandesNonPayees() {
         };
     }
 }
+
+export async function getPaiementsByEtudiant(etudiantId: string) {
+    try {
+        const paiementsData = await db
+            .select({
+                paiement: paiement,
+                commande: commande,
+            })
+            .from(paiement)
+            .leftJoin(commande, eq(paiement.commandeId, commande.id))
+            .where(eq(commande.etudiantId, etudiantId))
+            .orderBy(desc(paiement.createdAt));
+
+        const formattedPaiements = paiementsData.map((p) => ({
+            ...p.paiement,
+            commande: p.commande!,
+        }));
+
+        return {
+            success: true,
+            data: {
+                paiements: formattedPaiements,
+            },
+        };
+    } catch (error) {
+        console.error("Erreur getPaiementsByEtudiant:", error);
+        return {
+            success: false,
+            message: "Erreur lors de la récupération des paiements",
+        };
+    }
+}
