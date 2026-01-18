@@ -58,7 +58,7 @@ const getMethodeBadge = (methode: string | null) => {
         case 'ESPECES':
             return <Badge variant="outline">Espèces</Badge>;
         case 'MTN_MONEY':
-            return <Badge variant="outline" className="bg-orange-50">MTNMoney</Badge>;
+            return <Badge variant="outline" className="bg-orange-50">MTN Money</Badge>;
         case 'ORANGE_MONEY':
             return <Badge variant="outline" className="bg-blue-50">Orange Money</Badge>;
         default:
