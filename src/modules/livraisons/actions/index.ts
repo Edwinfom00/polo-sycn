@@ -334,3 +334,64 @@ export async function getCommandesValidees() {
         };
     }
 }
+
+export async function getLivraisonsByEtudiant(etudiantId: string) {
+    try {
+        const livraisonsData = await db
+            .select({
+                livraison: livraison,
+                commande: commande,
+            })
+            .from(livraison)
+            .leftJoin(commande, eq(livraison.commandeId, commande.id))
+            .where(eq(commande.etudiantId, etudiantId))
+            .orderBy(desc(livraison.livreAt));
+
+        // Charger les lignes pour chaque livraison
+        const livraisonsWithDetails = await Promise.all(
+            livraisonsData.map(async (liv) => {
+                const lignes = await db
+                    .select({
+                        ligne: ligneLivraison,
+                        ligneCommande: ligneCommande,
+                        produit: produit,
+                        taille: taille,
+                        couleur: couleur,
+                    })
+                    .from(ligneLivraison)
+                    .leftJoin(ligneCommande, eq(ligneLivraison.ligneCommandeId, ligneCommande.id))
+                    .leftJoin(produit, eq(ligneCommande.produitId, produit.id))
+                    .leftJoin(taille, eq(ligneCommande.tailleId, taille.id))
+                    .leftJoin(couleur, eq(ligneCommande.couleurId, couleur.id))
+                    .where(eq(ligneLivraison.livraisonId, liv.livraison.id));
+
+                return {
+                    ...liv.livraison,
+                    commande: liv.commande!,
+                    lignes: lignes.map((l) => ({
+                        ...l.ligne,
+                        ligneCommande: {
+                            ...l.ligneCommande!,
+                            produit: l.produit!,
+                            taille: l.taille!,
+                            couleur: l.couleur!,
+                        },
+                    })),
+                };
+            })
+        );
+
+        return {
+            success: true,
+            data: {
+                livraisons: livraisonsWithDetails,
+            },
+        };
+    } catch (error) {
+        console.error("Erreur getLivraisonsByEtudiant:", error);
+        return {
+            success: false,
+            message: "Erreur lors de la récupération des livraisons",
+        };
+    }
+}

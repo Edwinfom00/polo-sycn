@@ -437,3 +437,93 @@ export async function getStockStats() {
         };
     }
 }
+
+// ============================================
+// TAILLES
+// ============================================
+
+export async function createTaille(data: { nom: string; ordre?: number }) {
+    try {
+        // Vérifier si la taille existe déjà
+        const existing = await db
+            .select()
+            .from(taille)
+            .where(eq(taille.nom, data.nom))
+            .limit(1);
+
+        if (existing.length > 0) {
+            return {
+                success: false,
+                message: "Cette taille existe déjà",
+            };
+        }
+
+        // Si pas d'ordre spécifié, prendre le max + 1
+        let ordre = data.ordre || 0;
+        if (!data.ordre) {
+            const maxOrdre = await db
+                .select({ max: sql<number>`MAX(${taille.ordre})` })
+                .from(taille);
+            ordre = (Number(maxOrdre[0]?.max || 0)) + 1;
+        }
+
+        const [newTaille] = await db.insert(taille).values({
+            nom: data.nom,
+            ordre,
+            actif: true,
+        }).returning();
+
+        return {
+            success: true,
+            message: "Taille créée avec succès",
+            data: newTaille,
+        };
+    } catch (error) {
+        console.error("Erreur createTaille:", error);
+        return {
+            success: false,
+            message: "Erreur lors de la création de la taille",
+        };
+    }
+}
+
+// ============================================
+// COULEURS
+// ============================================
+
+export async function createCouleur(data: { nom: string; codeHex?: string }) {
+    try {
+        // Vérifier si la couleur existe déjà
+        const existing = await db
+            .select()
+            .from(couleur)
+            .where(eq(couleur.nom, data.nom))
+            .limit(1);
+
+        if (existing.length > 0) {
+            return {
+                success: false,
+                message: "Cette couleur existe déjà",
+            };
+        }
+
+        const [newCouleur] = await db.insert(couleur).values({
+            nom: data.nom,
+            codeHex: data.codeHex || null,
+            actif: true,
+        }).returning();
+
+        return {
+            success: true,
+            message: "Couleur créée avec succès",
+            data: newCouleur,
+        };
+    } catch (error) {
+        console.error("Erreur createCouleur:", error);
+        return {
+            success: false,
+            message: "Erreur lors de la création de la couleur",
+        };
+    }
+}
+

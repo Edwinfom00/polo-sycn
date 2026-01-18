@@ -21,7 +21,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Plus, Trash2, ShoppingCart } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Plus, Trash2, ShoppingCart, Package, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { createCommande } from "@/modules/commandes/actions";
 
@@ -119,207 +121,250 @@ export const NouvelleCommandeModal = ({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                        <ShoppingCart className="h-5 w-5" />
+            <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+                <DialogHeader className="pb-4">
+                    <DialogTitle className="flex items-center gap-2 text-2xl">
+                        <div className="p-2 bg-primary/10 rounded-lg">
+                            <ShoppingCart className="h-6 w-6 text-primary" />
+                        </div>
                         Nouvelle Commande
                     </DialogTitle>
-                    <DialogDescription>
-                        Sélectionnez vos polos, tailles et couleurs
+                    <DialogDescription className="text-base">
+                        Sélectionnez vos articles, tailles et couleurs pour créer votre commande
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="space-y-6">
+                <div className="flex-1 overflow-y-auto pr-2 space-y-6">
                     {/* Articles */}
                     <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-lg font-semibold">Articles</h3>
+                        <div className="flex items-center justify-between sticky top-0 bg-background z-10 pb-2">
+                            <div className="flex items-center gap-2">
+                                <Package className="h-5 w-5 text-muted-foreground" />
+                                <h3 className="text-lg font-semibold">Mes Articles</h3>
+                                <Badge variant="secondary">{lignes.length}</Badge>
+                            </div>
                             <Button
                                 type="button"
                                 variant="outline"
                                 size="sm"
                                 onClick={ajouterLigne}
+                                className="gap-2"
                             >
-                                <Plus className="h-4 w-4 mr-2" />
-                                Ajouter un article
+                                <Plus className="h-4 w-4" />
+                                Ajouter
                             </Button>
                         </div>
 
-                        {lignes.map((ligne, index) => (
-                            <div
-                                key={index}
-                                className="p-4 border rounded-lg space-y-4 bg-muted/30"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <Badge variant="outline">Article {index + 1}</Badge>
-                                    {lignes.length > 1 && (
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => supprimerLigne(index)}
-                                        >
-                                            <Trash2 className="h-4 w-4 text-destructive" />
-                                        </Button>
-                                    )}
-                                </div>
+                        {lignes.map((ligne, index) => {
+                            const produitSelectionne = produits.find((p) => p.id === ligne.produitId);
+                            const sousTotal = produitSelectionne
+                                ? parseFloat(produitSelectionne.prixUnitaire) * ligne.quantite
+                                : 0;
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    {/* Produit */}
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium">Produit *</label>
-                                        <Select
-                                            value={ligne.produitId}
-                                            onValueChange={(value) =>
-                                                updateLigne(index, "produitId", value)
-                                            }
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Sélectionnez un produit" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {produits
-                                                    .filter((p) => p.actif)
-                                                    .map((produit) => (
-                                                        <SelectItem
-                                                            key={produit.id}
-                                                            value={produit.id}
-                                                        >
-                                                            {produit.nom} -{" "}
-                                                            {parseFloat(
-                                                                produit.prixUnitaire
-                                                            ).toLocaleString("fr-FR")}{" "}
-                                                            FCFA
-                                                        </SelectItem>
-                                                    ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
+                            return (
+                                <Card key={index} className="overflow-hidden border-2 hover:border-primary/50 transition-colors">
+                                    <CardContent className="p-4 space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <Badge variant="outline" className="gap-1">
+                                                <Package className="h-3 w-3" />
+                                                Article {index + 1}
+                                            </Badge>
+                                            {lignes.length > 1 && (
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => supprimerLigne(index)}
+                                                    className="h-8 w-8 p-0 hover:bg-destructive/10"
+                                                >
+                                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                                </Button>
+                                            )}
+                                        </div>
 
-                                    {/* Taille */}
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium">Taille *</label>
-                                        <Select
-                                            value={ligne.tailleId}
-                                            onValueChange={(value) =>
-                                                updateLigne(index, "tailleId", value)
-                                            }
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Sélectionnez une taille" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {tailles.map((taille) => (
-                                                    <SelectItem
-                                                        key={taille.id}
-                                                        value={taille.id}
-                                                    >
-                                                        {taille.nom}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {/* Produit */}
+                                            <div className="space-y-2">
+                                                <Label className="text-sm font-medium flex items-center gap-1">
+                                                    Produit <span className="text-destructive">*</span>
+                                                </Label>
+                                                <Select
+                                                    value={ligne.produitId}
+                                                    onValueChange={(value) =>
+                                                        updateLigne(index, "produitId", value)
+                                                    }
+                                                >
+                                                    <SelectTrigger className={!ligne.produitId ? "border-orange-300" : ""}>
+                                                        <SelectValue placeholder="Choisir un produit" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {produits
+                                                            .filter((p) => p.actif)
+                                                            .map((produit) => (
+                                                                <SelectItem
+                                                                    key={produit.id}
+                                                                    value={produit.id}
+                                                                >
+                                                                    <div className="flex items-center justify-between w-full gap-4">
+                                                                        <span>{produit.nom}</span>
+                                                                        <Badge variant="secondary" className="ml-2">
+                                                                            {parseFloat(
+                                                                                produit.prixUnitaire
+                                                                            ).toLocaleString("fr-FR")} FCFA
+                                                                        </Badge>
+                                                                    </div>
+                                                                </SelectItem>
+                                                            ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
 
-                                    {/* Couleur */}
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium">Couleur *</label>
-                                        <Select
-                                            value={ligne.couleurId}
-                                            onValueChange={(value) =>
-                                                updateLigne(index, "couleurId", value)
-                                            }
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Sélectionnez une couleur" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {couleurs.map((couleur) => (
-                                                    <SelectItem
-                                                        key={couleur.id}
-                                                        value={couleur.id}
-                                                    >
-                                                        <div className="flex items-center gap-2">
-                                                            {couleur.codeHex && (
-                                                                <div
-                                                                    className="w-4 h-4 rounded border"
-                                                                    style={{
-                                                                        backgroundColor:
-                                                                            couleur.codeHex,
-                                                                    }}
-                                                                />
-                                                            )}
-                                                            {couleur.nom}
-                                                        </div>
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
+                                            {/* Taille */}
+                                            <div className="space-y-2">
+                                                <Label className="text-sm font-medium flex items-center gap-1">
+                                                    Taille <span className="text-destructive">*</span>
+                                                </Label>
+                                                <Select
+                                                    value={ligne.tailleId}
+                                                    onValueChange={(value) =>
+                                                        updateLigne(index, "tailleId", value)
+                                                    }
+                                                >
+                                                    <SelectTrigger className={!ligne.tailleId ? "border-orange-300" : ""}>
+                                                        <SelectValue placeholder="Choisir une taille" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {tailles.map((taille) => (
+                                                            <SelectItem
+                                                                key={taille.id}
+                                                                value={taille.id}
+                                                            >
+                                                                {taille.nom}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
 
-                                    {/* Quantité */}
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium">Quantité *</label>
-                                        <Input
-                                            type="number"
-                                            min="1"
-                                            value={ligne.quantite}
-                                            onChange={(e) =>
-                                                updateLigne(
-                                                    index,
-                                                    "quantite",
-                                                    parseInt(e.target.value) || 1
-                                                )
-                                            }
-                                        />
-                                    </div>
-                                </div>
+                                            {/* Couleur */}
+                                            <div className="space-y-2">
+                                                <Label className="text-sm font-medium flex items-center gap-1">
+                                                    Couleur <span className="text-destructive">*</span>
+                                                </Label>
+                                                <Select
+                                                    value={ligne.couleurId}
+                                                    onValueChange={(value) =>
+                                                        updateLigne(index, "couleurId", value)
+                                                    }
+                                                >
+                                                    <SelectTrigger className={!ligne.couleurId ? "border-orange-300" : ""}>
+                                                        <SelectValue placeholder="Choisir une couleur" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {couleurs.map((couleur) => (
+                                                            <SelectItem
+                                                                key={couleur.id}
+                                                                value={couleur.id}
+                                                            >
+                                                                <div className="flex items-center gap-2">
+                                                                    {couleur.codeHex && (
+                                                                        <div
+                                                                            className="w-5 h-5 rounded-full border-2 border-border shadow-sm"
+                                                                            style={{
+                                                                                backgroundColor:
+                                                                                    couleur.codeHex,
+                                                                            }}
+                                                                        />
+                                                                    )}
+                                                                    <span>{couleur.nom}</span>
+                                                                </div>
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
 
-                                {/* Sous-total */}
-                                {ligne.produitId && (
-                                    <div className="text-right">
-                                        <p className="text-sm text-muted-foreground">
-                                            Sous-total
-                                        </p>
-                                        <p className="text-lg font-semibold">
-                                            {(
-                                                parseFloat(
-                                                    produits.find(
-                                                        (p) => p.id === ligne.produitId
-                                                    )?.prixUnitaire || "0"
-                                                ) * ligne.quantite
-                                            ).toLocaleString("fr-FR")}{" "}
-                                            FCFA
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
+                                            {/* Quantité */}
+                                            <div className="space-y-2">
+                                                <Label className="text-sm font-medium flex items-center gap-1">
+                                                    Quantité <span className="text-destructive">*</span>
+                                                </Label>
+                                                <Input
+                                                    type="number"
+                                                    min="1"
+                                                    max="100"
+                                                    value={ligne.quantite}
+                                                    onChange={(e) =>
+                                                        updateLigne(
+                                                            index,
+                                                            "quantite",
+                                                            parseInt(e.target.value) || 1
+                                                        )
+                                                    }
+                                                    className="text-center font-medium"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Sous-total */}
+                                        {ligne.produitId && (
+                                            <div className="flex items-center justify-between pt-3 border-t">
+                                                <span className="text-sm text-muted-foreground">
+                                                    Sous-total de cet article
+                                                </span>
+                                                <span className="text-lg font-bold text-primary">
+                                                    {sousTotal.toLocaleString("fr-FR")} FCFA
+                                                </span>
+                                            </div>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            );
+                        })}
                     </div>
-
-                    <Separator />
 
                     {/* Notes */}
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium">Notes (optionnel)</label>
-                        <Textarea
-                            placeholder="Informations complémentaires..."
-                            value={notes}
-                            onChange={(e) => setNotes(e.target.value)}
-                            rows={3}
-                        />
+                    <Card>
+                        <CardContent className="p-4 space-y-2">
+                            <Label className="text-sm font-medium">Notes ou instructions (optionnel)</Label>
+                            <Textarea
+                                placeholder="Ex: Préférence de livraison, remarques particulières..."
+                                value={notes}
+                                onChange={(e) => setNotes(e.target.value)}
+                                rows={3}
+                                className="resize-none"
+                            />
+                        </CardContent>
+                    </Card>
+                </div>
+
+                <Separator className="my-4" />
+
+                {/* Footer avec total et actions */}
+                <div className="space-y-4 pt-2">
+                    {/* Résumé */}
+                    <div className="flex items-center justify-between p-4 bg-linear-to-r from-primary/10 to-primary/5 rounded-lg border-2 border-primary/20">
+                        <div>
+                            <p className="text-sm text-muted-foreground">Montant Total</p>
+                            <p className="text-3xl font-bold text-primary">
+                                {calculerTotal().toLocaleString("fr-FR")} FCFA
+                            </p>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-sm text-muted-foreground">Articles</p>
+                            <p className="text-2xl font-semibold">{lignes.length}</p>
+                        </div>
                     </div>
 
-                    <Separator />
-
-                    {/* Total */}
-                    <div className="flex items-center justify-between p-4 bg-primary/5 rounded-lg">
-                        <p className="text-lg font-semibold">Montant Total</p>
-                        <p className="text-2xl font-bold text-primary">
-                            {calculerTotal().toLocaleString("fr-FR")} FCFA
-                        </p>
-                    </div>
+                    {/* Message d'info */}
+                    {lignes.some(l => !l.produitId || !l.tailleId || !l.couleurId) && (
+                        <div className="flex items-start gap-2 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                            <AlertCircle className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
+                            <p className="text-sm text-orange-800">
+                                Veuillez remplir tous les champs obligatoires (*) pour chaque article
+                            </p>
+                        </div>
+                    )}
 
                     {/* Actions */}
                     <div className="flex justify-end gap-3">
@@ -328,6 +373,7 @@ export const NouvelleCommandeModal = ({
                             variant="outline"
                             onClick={() => onOpenChange(false)}
                             disabled={pending}
+                            size="lg"
                         >
                             Annuler
                         </Button>
@@ -335,7 +381,10 @@ export const NouvelleCommandeModal = ({
                             type="button"
                             onClick={handleSubmit}
                             disabled={pending}
+                            size="lg"
+                            className="gap-2 min-w-[180px]"
                         >
+                            <ShoppingCart className="h-5 w-5" />
                             {pending ? "Création..." : "Créer la commande"}
                         </Button>
                     </div>
