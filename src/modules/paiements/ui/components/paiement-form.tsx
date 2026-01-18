@@ -37,10 +37,8 @@ interface PaiementFormProps {
 
 const methodesPaiement = [
     "Espèces",
-    "Virement bancaire",
     "Mobile Money",
-    "Carte bancaire",
-    "Chèque",
+    "Orange Money",
 ];
 
 export const PaiementForm = ({

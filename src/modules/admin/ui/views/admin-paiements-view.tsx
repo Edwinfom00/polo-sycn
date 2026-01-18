@@ -14,6 +14,7 @@ import {
     Filter,
     ChevronLeft,
     ChevronRight,
+    Plus,
 } from "lucide-react";
 import {
     Dialog,
@@ -25,8 +26,10 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { validerPaiement, rejeterPaiement } from "@/modules/paiements/actions";
+import { validerPaiement, rejeterPaiement, getCommandesNonPayees } from "@/modules/paiements/actions";
+import { PaiementForm } from "@/modules/paiements/ui/components/paiement-form";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface Paiement {
     id: string;
@@ -62,6 +65,7 @@ const getStatusBadge = (statut: string) => {
 };
 
 export const AdminPaiementsView = ({ paiements: initialPaiements }: AdminPaiementsViewProps) => {
+    const router = useRouter();
     const [filter, setFilter] = useState<string>('all');
     const [search, setSearch] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
@@ -69,6 +73,8 @@ export const AdminPaiementsView = ({ paiements: initialPaiements }: AdminPaiemen
     const [action, setAction] = useState<'valider' | 'rejeter' | null>(null);
     const [notes, setNotes] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showCreateDialog, setShowCreateDialog] = useState(false);
+    const [commandes, setCommandes] = useState<any[]>([]);
     const itemsPerPage = 9;
 
     const filteredPaiements = initialPaiements.filter(p => {
@@ -100,7 +106,7 @@ export const AdminPaiementsView = ({ paiements: initialPaiements }: AdminPaiemen
                 const result = await validerPaiement({ id: selectedPaiement.id, notes });
                 if (result.success) {
                     toast.success(result.message);
-                    window.location.reload();
+                    router.refresh();
                 } else {
                     toast.error(result.message);
                 }
@@ -108,7 +114,7 @@ export const AdminPaiementsView = ({ paiements: initialPaiements }: AdminPaiemen
                 const result = await rejeterPaiement({ id: selectedPaiement.id, notes });
                 if (result.success) {
                     toast.success(result.message);
-                    window.location.reload();
+                    router.refresh();
                 } else {
                     toast.error(result.message);
                 }
@@ -123,11 +129,31 @@ export const AdminPaiementsView = ({ paiements: initialPaiements }: AdminPaiemen
         }
     };
 
+    const handleOpenCreateDialog = async () => {
+        setShowCreateDialog(true);
+        // Charger les commandes non payées
+        const result = await getCommandesNonPayees();
+        if (result.success && result.data) {
+            setCommandes(result.data);
+        }
+    };
+
+    const handleCreateSuccess = () => {
+        setShowCreateDialog(false);
+        router.refresh();
+    };
+
     return (
         <div className="flex-1 space-y-6 p-6">
-            <div>
-                <h1 className="text-3xl font-bold">Gestion des Paiements</h1>
-                <p className="text-muted-foreground">Validez les paiements des étudiants</p>
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold">Gestion des Paiements</h1>
+                    <p className="text-muted-foreground">Validez les paiements des étudiants</p>
+                </div>
+                <Button onClick={handleOpenCreateDialog}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Nouveau paiement
+                </Button>
             </div>
 
             <div className="grid gap-4 md:grid-cols-4">
@@ -354,6 +380,23 @@ export const AdminPaiementsView = ({ paiements: initialPaiements }: AdminPaiemen
                             {loading ? 'Traitement...' : action === 'valider' ? 'Valider' : 'Rejeter'}
                         </Button>
                     </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Modal de création de paiement */}
+            <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+                <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                        <DialogTitle>Enregistrer un paiement</DialogTitle>
+                        <DialogDescription>
+                            Enregistrez un paiement reçu d'un étudiant
+                        </DialogDescription>
+                    </DialogHeader>
+                    <PaiementForm
+                        commandes={commandes}
+                        onSuccess={handleCreateSuccess}
+                        onCancel={() => setShowCreateDialog(false)}
+                    />
                 </DialogContent>
             </Dialog>
         </div>
