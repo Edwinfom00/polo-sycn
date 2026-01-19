@@ -130,8 +130,8 @@ export const UserForm = ({
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <GeneratedAvatar
-                    seed={form.watch('name')}
-                    variant="botttsNeutral"
+                    seed={form.watch('name') || "Name"}
+                    variant="initials"
                     className="border size-16"
                 />
 
@@ -172,7 +172,7 @@ export const UserForm = ({
                                         size="icon"
                                         onClick={handleCopyEmail}
                                     >
-                                        {copiedEmail ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
+                                        {copiedEmail ? <Check className="h-4 w-4 text-primary" /> : <Copy className="h-4 w-4" />}
                                     </Button>
                                 )}
                             </div>
@@ -209,14 +209,14 @@ export const UserForm = ({
                                             <RefreshCw className="h-4 w-4" />
                                         </Button>
                                     )}
-                                    {generatedCredentials && (
+                                    {!generatedCredentials && (
                                         <Button
                                             type="button"
                                             variant="outline"
                                             size="icon"
                                             onClick={handleCopyPassword}
                                         >
-                                            {copiedPassword ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
+                                            {copiedPassword ? <Check className="h-4 w-4 text-primary" /> : <Copy className="h-4 w-4" />}
                                         </Button>
                                     )}
                                 </div>
@@ -237,7 +237,7 @@ export const UserForm = ({
                                 defaultValue={field.value}
                                 disabled={generatedCredentials !== null}
                             >
-                                <FormControl className="w-full!">
+                                <FormControl className="w-full">
                                     <SelectTrigger>
                                         <SelectValue placeholder="Sélectionner un rôle" />
                                     </SelectTrigger>
@@ -253,9 +253,9 @@ export const UserForm = ({
                 />
 
                 {generatedCredentials && (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 space-y-2">
-                        <p className="text-sm font-medium text-green-900">✓ Utilisateur créé avec succès!</p>
-                        <p className="text-xs text-green-700">Copiez les identifiants avant de fermer cette fenêtre.</p>
+                    <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 space-y-2">
+                        <p className="text-sm font-medium text-primary">✓ Utilisateur créé avec succès!</p>
+                        <p className="text-xs text-primary/80">Copiez les identifiants avant de fermer cette fenêtre.</p>
                         <Button
                             type="button"
                             variant="outline"
@@ -269,7 +269,7 @@ export const UserForm = ({
                     </div>
                 )}
 
-                <div className="flex justify-between gap-x-2">
+                <div className="flex flex-col-reverse sm:flex-row justify-between gap-2">
                     {!generatedCredentials ? (
                         <>
                             {onCancel && (
@@ -278,11 +278,12 @@ export const UserForm = ({
                                     disabled={isPending}
                                     type="button"
                                     onClick={onCancel}
+                                    className="w-full sm:w-auto"
                                 >
                                     Annuler
                                 </Button>
                             )}
-                            <Button type="submit" disabled={isPending}>
+                            <Button type="submit" disabled={isPending} className="w-full sm:w-auto">
                                 {isPending ? 'En cours...' : isEdit ? 'Mettre à jour' : 'Créer'}
                             </Button>
                         </>

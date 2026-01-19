@@ -173,48 +173,19 @@ export const ClasseForm = ({
                         </FormItem>
                     )}
                 />
-
-                <FormField
-                    control={form.control}
-                    name="delegueId"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Délégué (optionnel)</FormLabel>
-                            <Select
-                                onValueChange={field.onChange}
-                                defaultValue={field.value || undefined}
-                            >
-                                <FormControl className="w-full">
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Sélectionner un délégué" />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    <SelectItem value="none">Aucun délégué</SelectItem>
-                                    {delegues.map((delegue) => (
-                                        <SelectItem key={delegue.id} value={delegue.id}>
-                                            {delegue.name} ({delegue.email})
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-                <div className="flex justify-between gap-x-2">
+                <div className="flex flex-col-reverse sm:flex-row justify-between gap-2">
                     {onCancel && (
                         <Button
                             variant="ghost"
                             disabled={isPending}
                             type="button"
                             onClick={onCancel}
+                            className="w-full sm:w-auto"
                         >
                             Annuler
                         </Button>
                     )}
-                    <Button type="submit" disabled={isPending}>
+                    <Button type="submit" disabled={isPending} className="w-full sm:w-auto">
                         {isPending ? 'En cours...' : isEdit ? 'Mettre à jour' : 'Créer'}
                     </Button>
                 </div>

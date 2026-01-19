@@ -216,11 +216,11 @@ export const StockCard = ({ stock, onUpdate }: StockCardProps) => {
                         </DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4">
-                        <div>
+                        <div className="space-y-2">
                             <Label>Quantité actuelle</Label>
                             <p className="text-2xl font-bold">{stock.quantiteDisponible}</p>
                         </div>
-                        <div>
+                        <div className="space-y-2">
                             <Label>Quantité à {ajustType === 'AJOUT' ? 'ajouter' : 'retirer'}</Label>
                             <Input
                                 type="number"
@@ -252,7 +252,7 @@ export const StockCard = ({ stock, onUpdate }: StockCardProps) => {
                         <DialogTitle>Modifier le stock</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4">
-                        <div>
+                        <div className="space-y-2">
                             <Label>Quantité disponible</Label>
                             <Input
                                 type="number"
@@ -261,7 +261,7 @@ export const StockCard = ({ stock, onUpdate }: StockCardProps) => {
                                 onChange={(e) => setEditQuantite(parseInt(e.target.value) || 0)}
                             />
                         </div>
-                        <div>
+                        <div className="space-y-2">
                             <Label>Seuil d'alerte</Label>
                             <Input
                                 type="number"

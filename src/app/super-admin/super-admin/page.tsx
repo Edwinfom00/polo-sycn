@@ -13,7 +13,7 @@ export default async function SuperAdminPage() {
                 <div>
                     <h1 className="text-3xl font-bold">Super Administration</h1>
                     <p className="text-muted-foreground">
-                        Contrôle total du système PoloSync
+                        Contrôle total du système TWYZ
                     </p>
                 </div>
                 <Badge variant="default" className="gap-2 bg-gradient-to-r from-yellow-500 to-orange-500">

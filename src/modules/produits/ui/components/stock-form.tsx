@@ -304,18 +304,19 @@ export const StockForm = ({
                     )}
                 />
 
-                <div className="flex justify-between gap-x-2">
+                <div className="flex flex-col-reverse sm:flex-row justify-between gap-2">
                     {onCancel && (
                         <Button
                             variant="ghost"
                             disabled={isPending}
                             type="button"
                             onClick={onCancel}
+                            className="w-full sm:w-auto"
                         >
                             Annuler
                         </Button>
                     )}
-                    <Button type="submit" disabled={isPending}>
+                    <Button type="submit" disabled={isPending} className="w-full sm:w-auto">
                         {isPending ? 'En cours...' : 'Créer'}
                     </Button>
                 </div>
