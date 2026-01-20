@@ -82,13 +82,13 @@ export const AdminSidebar = () => {
                 <Link href="/admin" className="flex items-center gap-2 px-2 pt-2">
                     <Image src="/logo.png" height={100} width={100} alt="logo" />
                     <div>
-                        <p className="text-2xl font-semibold">PoloSync</p>
+                        <p className="text-2xl font-semibold">TWYZ</p>
                         <p className="text-xs text-muted-foreground">Administration</p>
                     </div>
                 </Link>
             </SidebarHeader>
             <div className="px-4 py-2">
-                <Separator className="opacity-10 text-[#5D6B68]" />
+                <Separator className="opacity-10" />
             </div>
             <SidebarContent>
                 {/* Menu principal */}
@@ -100,8 +100,8 @@ export const AdminSidebar = () => {
                                     <SidebarMenuButton
                                         asChild
                                         className={cn(
-                                            "h-10 hover:bg-linear-to-r/oklch border border-transparent hover:border-[#5D6B68] from-sidebar-accent from-5% via-30% via-sidebar/50 to-sidebar/50",
-                                            pathname === item.href && "bg-linear-to-r/oklch border-[#5D6B68]/10"
+                                            "h-10 hover:bg-sidebar-accent/50 border border-transparent hover:border-sidebar-accent",
+                                            pathname === item.href && "bg-sidebar-accent border-sidebar-accent"
                                         )}
                                         isActive={pathname === item.href}
                                     >
@@ -117,7 +117,7 @@ export const AdminSidebar = () => {
                 </SidebarGroup>
 
                 <div className="px-4 py-2">
-                    <Separator className="opacity-10 text-[#5D6B68]" />
+                    <Separator className="opacity-10" />
                 </div>
 
                 {/* Menu opérations */}
@@ -132,8 +132,8 @@ export const AdminSidebar = () => {
                                     <SidebarMenuButton
                                         asChild
                                         className={cn(
-                                            "h-10 hover:bg-linear-to-r/oklch border border-transparent hover:border-[#5D6B68] from-sidebar-accent from-5% via-30% via-sidebar/50 to-sidebar/50",
-                                            pathname.startsWith(item.href) && "bg-linear-to-r/oklch border-[#5D6B68]/10"
+                                            "h-10 hover:bg-sidebar-accent/50 border border-transparent hover:border-sidebar-accent",
+                                            pathname.startsWith(item.href) && "bg-sidebar-accent border-sidebar-accent"
                                         )}
                                         isActive={pathname.startsWith(item.href)}
                                     >
@@ -149,7 +149,7 @@ export const AdminSidebar = () => {
                 </SidebarGroup>
 
                 <div className="px-4 py-2">
-                    <Separator className="opacity-10 text-[#5D6B68]" />
+                    <Separator className="opacity-10" />
                 </div>
 
                 {/* Menu rapports */}
@@ -161,8 +161,8 @@ export const AdminSidebar = () => {
                                     <SidebarMenuButton
                                         asChild
                                         className={cn(
-                                            "h-10 hover:bg-linear-to-r/oklch border border-transparent hover:border-[#5D6B68] from-sidebar-accent from-5% via-30% via-sidebar/50 to-sidebar/50",
-                                            pathname === item.href && "bg-linear-to-r/oklch border-[#5D6B68]/10"
+                                            "h-10 hover:bg-sidebar-accent/50 border border-transparent hover:border-sidebar-accent",
+                                            pathname === item.href && "bg-sidebar-accent border-sidebar-accent"
                                         )}
                                         isActive={pathname === item.href}
                                     >

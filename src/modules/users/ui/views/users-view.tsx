@@ -42,7 +42,7 @@ export const UsersView = ({ initialUsers, stats }: UsersViewProps) => {
                     <div>
                         <h1 className="text-3xl font-bold">Gestion du personnel</h1>
                         <p className="text-muted-foreground">
-                            Créer et gérer les comptes administrateurs et délégués de classe
+                            Créer et gérer les comptes administrateurs
                         </p>
                     </div>
                     <Button onClick={() => setIsCreateOpen(true)}>
@@ -51,7 +51,7 @@ export const UsersView = ({ initialUsers, stats }: UsersViewProps) => {
                     </Button>
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-3">
+                <div className="grid gap-6 md:grid-cols-2">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Total Personnel</CardTitle>
@@ -60,7 +60,7 @@ export const UsersView = ({ initialUsers, stats }: UsersViewProps) => {
                         <CardContent>
                             <div className="text-2xl font-bold">{stats.total}</div>
                             <p className="text-xs text-muted-foreground">
-                                Admins & Délégués
+                                Administrateurs
                             </p>
                         </CardContent>
                     </Card>
@@ -73,18 +73,6 @@ export const UsersView = ({ initialUsers, stats }: UsersViewProps) => {
                             <div className="text-2xl font-bold">{stats.admins}</div>
                             <p className="text-xs text-muted-foreground">
                                 Super Admin & Admin
-                            </p>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Délégués</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{stats.delegues}</div>
-                            <p className="text-xs text-muted-foreground">
-                                {stats.delegues > 1 ? 'délégués de classe' : 'délégué de classe'}
                             </p>
                         </CardContent>
                     </Card>
@@ -124,7 +112,7 @@ export const UsersView = ({ initialUsers, stats }: UsersViewProps) => {
                 open={isCreateOpen}
                 onOpenChange={setIsCreateOpen}
                 title="Créer un membre du personnel"
-                description="Ajouter un administrateur ou un délégué de classe"
+                description="Ajouter un administrateur"
             >
                 <UserForm
                     onSuccess={handleSuccess}

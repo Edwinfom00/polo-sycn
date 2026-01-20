@@ -273,10 +273,10 @@ export const AdminLivraisonsView = ({ livraisons: initialLivraisons, commandesVa
                             </div>
                         ) : (
                             <>
-                                <div>
+                                <div className="space-y-2">
                                     <Label>Commande * ({commandesValidees.length} disponible{commandesValidees.length > 1 ? 's' : ''})</Label>
                                     <Select value={selectedCommande} onValueChange={setSelectedCommande}>
-                                        <SelectTrigger>
+                                        <SelectTrigger className="w-full!">
                                             <SelectValue placeholder="Sélectionner une commande" />
                                         </SelectTrigger>
                                         <SelectContent className="w-full">

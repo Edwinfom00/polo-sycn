@@ -148,9 +148,9 @@ export const CommandeForm = ({
                             </div>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="text-sm font-medium">Produit</label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-xs sm:text-sm font-medium">Produit</label>
                                     <Select
                                         value={ligne.produitId}
                                         onValueChange={(value) => updateLigne(index, 'produitId', value)}
@@ -161,15 +161,15 @@ export const CommandeForm = ({
                                         <SelectContent>
                                             {produits.map((produit) => (
                                                 <SelectItem key={produit.id} value={produit.id}>
-                                                    {produit.nom} - {produit.prixUnitaire} FCFA
+                                                    <span className="text-xs sm:text-sm">{produit.nom} - {produit.prixUnitaire} FCFA</span>
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
 
-                                <div>
-                                    <label className="text-sm font-medium">Taille</label>
+                                <div className="space-y-1.5">
+                                    <label className="text-xs sm:text-sm font-medium">Taille</label>
                                     <Select
                                         value={ligne.tailleId}
                                         onValueChange={(value) => updateLigne(index, 'tailleId', value)}
@@ -187,8 +187,8 @@ export const CommandeForm = ({
                                     </Select>
                                 </div>
 
-                                <div>
-                                    <label className="text-sm font-medium">Couleur</label>
+                                <div className="space-y-1.5">
+                                    <label className="text-xs sm:text-sm font-medium">Couleur</label>
                                     <Select
                                         value={ligne.couleurId}
                                         onValueChange={(value) => updateLigne(index, 'couleurId', value)}
@@ -202,11 +202,11 @@ export const CommandeForm = ({
                                                     <div className="flex items-center gap-2">
                                                         {couleur.codeHex && (
                                                             <div
-                                                                className="w-4 h-4 rounded border"
+                                                                className="w-3 h-3 sm:w-4 sm:h-4 rounded border"
                                                                 style={{ backgroundColor: couleur.codeHex }}
                                                             />
                                                         )}
-                                                        {couleur.nom}
+                                                        <span className="text-xs sm:text-sm">{couleur.nom}</span>
                                                     </div>
                                                 </SelectItem>
                                             ))}
@@ -214,8 +214,8 @@ export const CommandeForm = ({
                                     </Select>
                                 </div>
 
-                                <div>
-                                    <label className="text-sm font-medium">Quantité</label>
+                                <div className="space-y-1.5">
+                                    <label className="text-xs sm:text-sm font-medium">Quantité</label>
                                     <Input
                                         type="number"
                                         min="1"
@@ -226,7 +226,7 @@ export const CommandeForm = ({
                             </div>
 
                             {ligne.produitId && (
-                                <div className="text-sm text-muted-foreground">
+                                <div className="text-xs sm:text-sm text-muted-foreground">
                                     Sous-total: {
                                         (parseFloat(produits.find(p => p.id === ligne.produitId)?.prixUnitaire || '0') * ligne.quantite).toFixed(2)
                                     } FCFA
@@ -248,39 +248,41 @@ export const CommandeForm = ({
             </Button>
 
             {/* Notes */}
-            <div>
-                <label className="text-sm font-medium">Notes (optionnel)</label>
+            <div className="space-y-1.5">
+                <label className="text-xs sm:text-sm font-medium">Notes (optionnel)</label>
                 <Textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Informations complémentaires..."
                     rows={3}
+                    className="text-xs sm:text-sm"
                 />
             </div>
 
             {/* Total */}
             <Card>
-                <CardContent className="pt-6">
-                    <div className="flex items-center justify-between text-lg font-semibold">
+                <CardContent className="pt-4 sm:pt-6">
+                    <div className="flex items-center justify-between text-base sm:text-lg font-semibold">
                         <span>Total</span>
-                        <span>{calculerTotal().toFixed(2)} FCFA</span>
+                        <span className="text-primary">{calculerTotal().toFixed(2)} FCFA</span>
                     </div>
                 </CardContent>
             </Card>
 
             {/* Actions */}
-            <div className="flex justify-between gap-x-2">
+            <div className="flex flex-col-reverse sm:flex-row justify-between gap-2">
                 {onCancel && (
                     <Button
                         variant="ghost"
                         disabled={isPending}
                         type="button"
                         onClick={onCancel}
+                        className="w-full sm:w-auto"
                     >
                         Annuler
                     </Button>
                 )}
-                <Button onClick={onSubmit} disabled={isPending}>
+                <Button onClick={onSubmit} disabled={isPending} className="w-full sm:w-auto">
                     {isPending ? 'En cours...' : 'Passer la commande'}
                 </Button>
             </div>

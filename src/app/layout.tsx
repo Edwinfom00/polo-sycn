@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Polo Sycn",
+  title: "TWYZ",
   description: "Application de Gestion",
 };
 

@@ -57,28 +57,68 @@ export async function createUser(data: unknown) {
 
 export async function updateUser(data: unknown) {
     try {
-        const validated = userUpdateSchema.parse(data);
+        console.log('=== UPDATE USER START ===');
+        console.log('Raw data received:', JSON.stringify(data, null, 2));
 
-        const updateData: any = {};
-        if (validated.name) updateData.name = validated.name;
-        if (validated.email) updateData.email = validated.email;
-        if (validated.role) updateData.role = validated.role;
+        const validated = userUpdateSchema.parse(data);
+        console.log('Validated data:', JSON.stringify(validated, null, 2));
+
+        if (!validated.id) {
+            console.error('No ID provided');
+            return { success: false, message: 'ID utilisateur manquant' };
+        }
+
+        // Vérifier que l'utilisateur existe
+        const existingUser = await db
+            .select()
+            .from(user)
+            .where(eq(user.id, validated.id))
+            .limit(1);
+
+        if (existingUser.length === 0) {
+            console.error('User not found:', validated.id);
+            return { success: false, message: 'Utilisateur introuvable' };
+        }
+
+        console.log('Existing user:', JSON.stringify(existingUser[0], null, 2));
+
+        // Construire l'objet de mise à jour
+        const updateData: any = {
+            updatedAt: new Date(),
+        };
+
+        if (validated.name !== undefined) updateData.name = validated.name;
+        if (validated.email !== undefined) updateData.email = validated.email;
+        if (validated.role !== undefined) updateData.role = validated.role;
         if (validated.classeId !== undefined) updateData.classeId = validated.classeId;
 
-        await db
-            .update(user)
-            .set({
-                ...updateData,
-                updatedAt: new Date(),
-            })
-            .where(eq(user.id, validated.id));
+        console.log('Update data to apply:', JSON.stringify(updateData, null, 2));
 
+        // Effectuer la mise à jour
+        const result = await db
+            .update(user)
+            .set(updateData)
+            .where(eq(user.id, validated.id))
+            .returning();
+
+        console.log('Database update result:', JSON.stringify(result, null, 2));
+        console.log('=== UPDATE USER END ===');
+
+        revalidatePath('/super-admin/admin/users');
         revalidatePath('/admin/users');
 
         return { success: true, message: 'Utilisateur mis à jour avec succès' };
     } catch (error) {
-        console.error('Error updating user:', error);
-        return { success: false, message: error instanceof Error ? error.message : 'Erreur lors de la mise à jour' };
+        console.error('=== UPDATE USER ERROR ===');
+        console.error('Error details:', error);
+        if (error instanceof Error) {
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
+        }
+        return {
+            success: false,
+            message: error instanceof Error ? error.message : 'Erreur lors de la mise à jour'
+        };
     }
 }
 
@@ -194,13 +234,63 @@ export async function getUserStats(): Promise<UserStats> {
         const stats = {
             total: users.filter(u => u.role !== 'ETUDIANT').length,
             admins: users.filter(u => u.role === 'SUPER_ADMIN' || u.role === 'ADMIN').length,
-            delegues: users.filter(u => u.role === 'DELEGUE').length,
-            etudiants: users.filter(u => u.role === 'ETUDIANT').length, // Pour info seulement
+            delegues: 0,
+            etudiants: users.filter(u => u.role === 'ETUDIANT').length,
         };
 
         return stats;
     } catch (error) {
         console.error('Error getting user stats:', error);
         return { total: 0, admins: 0, delegues: 0, etudiants: 0 };
+    }
+}
+
+export async function regenerateCredentials(userId: string) {
+    try {
+        const { generatePassword } = await import("@/lib/utils/password-generator");
+
+        // Récupérer l'utilisateur
+        const existingUser = await db
+            .select()
+            .from(user)
+            .where(eq(user.id, userId))
+            .limit(1);
+
+        if (existingUser.length === 0) {
+            return { success: false, message: 'Utilisateur introuvable' };
+        }
+
+        const userData = existingUser[0];
+
+        // Vérifier que c'est un admin
+        if (userData.role !== 'ADMIN' && userData.role !== 'SUPER_ADMIN') {
+            return { success: false, message: 'Seuls les administrateurs peuvent avoir leurs identifiants régénérés' };
+        }
+
+        // Générer un nouveau mot de passe
+        const newPassword = generatePassword(12);
+
+        // Mettre à jour le mot de passe via BetterAuth
+        const bcrypt = await import('bcryptjs');
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        await db
+            .update(account)
+            .set({ password: hashedPassword })
+            .where(eq(account.userId, userId));
+
+        revalidatePath('/super-admin/admin/users');
+
+        return {
+            success: true,
+            message: 'Identifiants régénérés avec succès',
+            data: {
+                email: userData.email,
+                password: newPassword
+            }
+        };
+    } catch (error) {
+        console.error('Error regenerating credentials:', error);
+        return { success: false, message: error instanceof Error ? error.message : 'Erreur lors de la régénération' };
     }
 }

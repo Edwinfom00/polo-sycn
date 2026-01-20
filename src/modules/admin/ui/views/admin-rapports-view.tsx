@@ -76,7 +76,7 @@ const exportToPDF = async (stats: RapportsStats) => {
 
         // Titre
         doc.setFontSize(20);
-        doc.text('Rapport PoloSync', 105, 15, { align: 'center' });
+        doc.text('Rapport TWYZ', 105, 15, { align: 'center' });
         doc.setFontSize(12);
         doc.text(`Généré le ${date}`, 105, 22, { align: 'center' });
 
@@ -161,7 +161,7 @@ const exportToPDF = async (stats: RapportsStats) => {
         }
 
         // Sauvegarder
-        doc.save(`rapport-polosync-${date}.pdf`);
+        doc.save(`rapport-twyz-${date}.pdf`);
         toast.success('Rapport exporté en PDF');
     } catch (error) {
         console.error('Erreur export PDF:', error);
@@ -322,9 +322,9 @@ export const AdminRapportsView = ({ stats }: AdminRapportsViewProps) => {
                                     <div className="w-full bg-gray-200 rounded-full h-2">
                                         <div
                                             className={`h-2 rounded-full transition-all ${item.statut === 'EN_ATTENTE' ? 'bg-yellow-500' :
-                                                    item.statut === 'PAYE' ? 'bg-blue-500' :
-                                                        item.statut === 'VALIDE' ? 'bg-green-500' :
-                                                            'bg-purple-500'
+                                                item.statut === 'PAYE' ? 'bg-blue-500' :
+                                                    item.statut === 'VALIDE' ? 'bg-green-500' :
+                                                        'bg-purple-500'
                                                 }`}
                                             style={{ width: `${percentage}%` }}
                                         />

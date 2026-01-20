@@ -390,7 +390,7 @@ export const AdminEtudiantsView = ({ etudiants: initialEtudiants, classes = [], 
                         </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4">
-                        <div>
+                        <div className="space-y-2">
                             <Label>Nom complet *</Label>
                             <Input
                                 value={name}
@@ -399,7 +399,7 @@ export const AdminEtudiantsView = ({ etudiants: initialEtudiants, classes = [], 
                                 disabled={generatedCredentials !== null}
                             />
                         </div>
-                        <div>
+                        <div className="space-y-2">
                             <Label>Email *</Label>
                             <div className="flex gap-2">
                                 <Input
@@ -422,7 +422,7 @@ export const AdminEtudiantsView = ({ etudiants: initialEtudiants, classes = [], 
                                 )}
                             </div>
                         </div>
-                        <div>
+                        <div className="space-y-2">
                             <Label>Mot de passe *</Label>
                             <div className="flex gap-2">
                                 <Input
@@ -457,10 +457,10 @@ export const AdminEtudiantsView = ({ etudiants: initialEtudiants, classes = [], 
                             </div>
                         </div>
                         {classes.length > 0 && (
-                            <div>
+                            <div className="space-y-2">
                                 <Label>Classe (optionnel)</Label>
                                 <Select value={classeId} onValueChange={setClasseId} disabled={generatedCredentials !== null}>
-                                    <SelectTrigger>
+                                    <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Sélectionner une classe (optionnel)" />
                                     </SelectTrigger>
                                     <SelectContent>

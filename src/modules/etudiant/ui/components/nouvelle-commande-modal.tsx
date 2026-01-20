@@ -121,26 +121,26 @@ export const NouvelleCommandeModal = ({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+            <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden flex flex-col p-4 sm:p-6">
                 <DialogHeader className="pb-4">
-                    <DialogTitle className="flex items-center gap-2 text-2xl">
+                    <DialogTitle className="flex items-center gap-2 text-xl sm:text-2xl">
                         <div className="p-2 bg-primary/10 rounded-lg">
-                            <ShoppingCart className="h-6 w-6 text-primary" />
+                            <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                         </div>
                         Nouvelle Commande
                     </DialogTitle>
-                    <DialogDescription className="text-base">
+                    <DialogDescription className="text-sm sm:text-base">
                         Sélectionnez vos articles, tailles et couleurs pour créer votre commande
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="flex-1 overflow-y-auto pr-2 space-y-6">
+                <div className="flex-1 overflow-y-auto pr-1 sm:pr-2 space-y-4 sm:space-y-6">
                     {/* Articles */}
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                         <div className="flex items-center justify-between sticky top-0 bg-background z-10 pb-2">
                             <div className="flex items-center gap-2">
-                                <Package className="h-5 w-5 text-muted-foreground" />
-                                <h3 className="text-lg font-semibold">Mes Articles</h3>
+                                <Package className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                                <h3 className="text-base sm:text-lg font-semibold">Mes Articles</h3>
                                 <Badge variant="secondary">{lignes.length}</Badge>
                             </div>
                             <Button
@@ -148,10 +148,11 @@ export const NouvelleCommandeModal = ({
                                 variant="outline"
                                 size="sm"
                                 onClick={ajouterLigne}
-                                className="gap-2"
+                                className="gap-1 sm:gap-2 text-xs sm:text-sm"
                             >
-                                <Plus className="h-4 w-4" />
-                                Ajouter
+                                <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
+                                <span className="hidden sm:inline">Ajouter</span>
+                                <span className="sm:hidden">+</span>
                             </Button>
                         </div>
 
@@ -163,9 +164,9 @@ export const NouvelleCommandeModal = ({
 
                             return (
                                 <Card key={index} className="overflow-hidden border-2 hover:border-primary/50 transition-colors">
-                                    <CardContent className="p-4 space-y-4">
+                                    <CardContent className="p-3 sm:p-4 space-y-3 sm:space-y-4">
                                         <div className="flex items-center justify-between">
-                                            <Badge variant="outline" className="gap-1">
+                                            <Badge variant="outline" className="gap-1 text-xs">
                                                 <Package className="h-3 w-3" />
                                                 Article {index + 1}
                                             </Badge>
@@ -175,17 +176,17 @@ export const NouvelleCommandeModal = ({
                                                     variant="ghost"
                                                     size="sm"
                                                     onClick={() => supprimerLigne(index)}
-                                                    className="h-8 w-8 p-0 hover:bg-destructive/10"
+                                                    className="h-7 w-7 sm:h-8 sm:w-8 p-0 hover:bg-destructive/10"
                                                 >
-                                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                                    <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 text-destructive" />
                                                 </Button>
                                             )}
                                         </div>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                             {/* Produit */}
-                                            <div className="space-y-2">
-                                                <Label className="text-sm font-medium flex items-center gap-1">
+                                            <div className="space-y-1.5 sm:space-y-2 sm:col-span-2">
+                                                <Label className="text-xs sm:text-sm font-medium flex items-center gap-1">
                                                     Produit <span className="text-destructive">*</span>
                                                 </Label>
                                                 <Select
@@ -194,10 +195,10 @@ export const NouvelleCommandeModal = ({
                                                         updateLigne(index, "produitId", value)
                                                     }
                                                 >
-                                                    <SelectTrigger className={!ligne.produitId ? "border-orange-300" : ""}>
+                                                    <SelectTrigger className={!ligne.produitId ? "border-primary/30 w-full!" : "w-full!"}>
                                                         <SelectValue placeholder="Choisir un produit" />
                                                     </SelectTrigger>
-                                                    <SelectContent>
+                                                    <SelectContent className="w-full!">
                                                         {produits
                                                             .filter((p) => p.actif)
                                                             .map((produit) => (
@@ -205,9 +206,9 @@ export const NouvelleCommandeModal = ({
                                                                     key={produit.id}
                                                                     value={produit.id}
                                                                 >
-                                                                    <div className="flex items-center justify-between w-full gap-4">
-                                                                        <span>{produit.nom}</span>
-                                                                        <Badge variant="secondary" className="ml-2">
+                                                                    <div className="flex items-center justify-between w-full gap-2 sm:gap-4">
+                                                                        <span className="text-xs sm:text-sm">{produit.nom}</span>
+                                                                        <Badge variant="secondary" className="ml-2 text-xs">
                                                                             {parseFloat(
                                                                                 produit.prixUnitaire
                                                                             ).toLocaleString("fr-FR")} FCFA
@@ -220,8 +221,8 @@ export const NouvelleCommandeModal = ({
                                             </div>
 
                                             {/* Taille */}
-                                            <div className="space-y-2">
-                                                <Label className="text-sm font-medium flex items-center gap-1">
+                                            <div className="space-y-1.5 sm:space-y-2">
+                                                <Label className="text-xs sm:text-sm font-medium flex items-center gap-1">
                                                     Taille <span className="text-destructive">*</span>
                                                 </Label>
                                                 <Select
@@ -230,7 +231,7 @@ export const NouvelleCommandeModal = ({
                                                         updateLigne(index, "tailleId", value)
                                                     }
                                                 >
-                                                    <SelectTrigger className={!ligne.tailleId ? "border-orange-300" : ""}>
+                                                    <SelectTrigger className={!ligne.tailleId ? "border-primary/30 w-full!" : "w-full!"}>
                                                         <SelectValue placeholder="Choisir une taille" />
                                                     </SelectTrigger>
                                                     <SelectContent>
@@ -247,8 +248,8 @@ export const NouvelleCommandeModal = ({
                                             </div>
 
                                             {/* Couleur */}
-                                            <div className="space-y-2">
-                                                <Label className="text-sm font-medium flex items-center gap-1">
+                                            <div className="space-y-1.5 sm:space-y-2">
+                                                <Label className="text-xs sm:text-sm font-medium flex items-center gap-1">
                                                     Couleur <span className="text-destructive">*</span>
                                                 </Label>
                                                 <Select
@@ -257,7 +258,7 @@ export const NouvelleCommandeModal = ({
                                                         updateLigne(index, "couleurId", value)
                                                     }
                                                 >
-                                                    <SelectTrigger className={!ligne.couleurId ? "border-orange-300" : ""}>
+                                                    <SelectTrigger className={!ligne.couleurId ? "border-primary/30 w-full!" : "w-full!"}>
                                                         <SelectValue placeholder="Choisir une couleur" />
                                                     </SelectTrigger>
                                                     <SelectContent>
@@ -269,14 +270,14 @@ export const NouvelleCommandeModal = ({
                                                                 <div className="flex items-center gap-2">
                                                                     {couleur.codeHex && (
                                                                         <div
-                                                                            className="w-5 h-5 rounded-full border-2 border-border shadow-sm"
+                                                                            className="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-border shadow-sm"
                                                                             style={{
                                                                                 backgroundColor:
                                                                                     couleur.codeHex,
                                                                             }}
                                                                         />
                                                                     )}
-                                                                    <span>{couleur.nom}</span>
+                                                                    <span className="text-xs sm:text-sm">{couleur.nom}</span>
                                                                 </div>
                                                             </SelectItem>
                                                         ))}
@@ -285,8 +286,8 @@ export const NouvelleCommandeModal = ({
                                             </div>
 
                                             {/* Quantité */}
-                                            <div className="space-y-2">
-                                                <Label className="text-sm font-medium flex items-center gap-1">
+                                            <div className="space-y-1.5 sm:space-y-2 sm:col-span-2">
+                                                <Label className="text-xs sm:text-sm font-medium flex items-center gap-1">
                                                     Quantité <span className="text-destructive">*</span>
                                                 </Label>
                                                 <Input
@@ -308,11 +309,11 @@ export const NouvelleCommandeModal = ({
 
                                         {/* Sous-total */}
                                         {ligne.produitId && (
-                                            <div className="flex items-center justify-between pt-3 border-t">
-                                                <span className="text-sm text-muted-foreground">
+                                            <div className="flex items-center justify-between pt-2 sm:pt-3 border-t text-xs sm:text-sm">
+                                                <span className="text-muted-foreground">
                                                     Sous-total de cet article
                                                 </span>
-                                                <span className="text-lg font-bold text-primary">
+                                                <span className="text-base sm:text-lg font-bold text-primary">
                                                     {sousTotal.toLocaleString("fr-FR")} FCFA
                                                 </span>
                                             </div>
@@ -325,55 +326,56 @@ export const NouvelleCommandeModal = ({
 
                     {/* Notes */}
                     <Card>
-                        <CardContent className="p-4 space-y-2">
-                            <Label className="text-sm font-medium">Notes ou instructions (optionnel)</Label>
+                        <CardContent className="p-3 sm:p-4 space-y-1.5 sm:space-y-2">
+                            <Label className="text-xs sm:text-sm font-medium">Notes ou instructions (optionnel)</Label>
                             <Textarea
                                 placeholder="Ex: Préférence de livraison, remarques particulières..."
                                 value={notes}
                                 onChange={(e) => setNotes(e.target.value)}
                                 rows={3}
-                                className="resize-none"
+                                className="resize-none text-xs sm:text-sm"
                             />
                         </CardContent>
                     </Card>
                 </div>
 
-                <Separator className="my-4" />
+                <Separator className="my-3 sm:my-4" />
 
                 {/* Footer avec total et actions */}
-                <div className="space-y-4 pt-2">
+                <div className="space-y-3 sm:space-y-4 pt-2">
                     {/* Résumé */}
-                    <div className="flex items-center justify-between p-4 bg-linear-to-r from-primary/10 to-primary/5 rounded-lg border-2 border-primary/20">
+                    <div className="flex items-center justify-between p-3 sm:p-4 bg-primary/5 rounded-lg border-2 border-primary/20">
                         <div>
-                            <p className="text-sm text-muted-foreground">Montant Total</p>
-                            <p className="text-3xl font-bold text-primary">
+                            <p className="text-xs sm:text-sm text-muted-foreground">Montant Total</p>
+                            <p className="text-2xl sm:text-3xl font-bold text-primary">
                                 {calculerTotal().toLocaleString("fr-FR")} FCFA
                             </p>
                         </div>
                         <div className="text-right">
-                            <p className="text-sm text-muted-foreground">Articles</p>
-                            <p className="text-2xl font-semibold">{lignes.length}</p>
+                            <p className="text-xs sm:text-sm text-muted-foreground">Articles</p>
+                            <p className="text-xl sm:text-2xl font-semibold">{lignes.length}</p>
                         </div>
                     </div>
 
                     {/* Message d'info */}
                     {lignes.some(l => !l.produitId || !l.tailleId || !l.couleurId) && (
-                        <div className="flex items-start gap-2 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                            <AlertCircle className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
-                            <p className="text-sm text-orange-800">
+                        <div className="flex items-start gap-2 p-2.5 sm:p-3 bg-primary/5 border border-primary/20 rounded-lg">
+                            <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 shrink-0" />
+                            <p className="text-xs sm:text-sm text-primary/90">
                                 Veuillez remplir tous les champs obligatoires (*) pour chaque article
                             </p>
                         </div>
                     )}
 
                     {/* Actions */}
-                    <div className="flex justify-end gap-3">
+                    <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3">
                         <Button
                             type="button"
                             variant="outline"
                             onClick={() => onOpenChange(false)}
                             disabled={pending}
                             size="lg"
+                            className="w-full sm:w-auto"
                         >
                             Annuler
                         </Button>
@@ -382,9 +384,9 @@ export const NouvelleCommandeModal = ({
                             onClick={handleSubmit}
                             disabled={pending}
                             size="lg"
-                            className="gap-2 min-w-[180px]"
+                            className="gap-2 w-full sm:w-auto sm:min-w-[180px]"
                         >
-                            <ShoppingCart className="h-5 w-5" />
+                            <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
                             {pending ? "Création..." : "Créer la commande"}
                         </Button>
                     </div>

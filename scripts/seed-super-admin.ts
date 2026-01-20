@@ -4,8 +4,8 @@ import { user } from '../src/db/schema';
 import { eq } from 'drizzle-orm';
 import { auth } from '../src/lib/auth';
 
-const SUPER_ADMIN_EMAIL = process.env.SUPER_ADMIN_EMAIL || 'admin@polosync.com';
-const SUPER_ADMIN_PASSWORD = process.env.SUPER_ADMIN_PASSWORD || 'Admin@2024!';
+const SUPER_ADMIN_EMAIL = process.env.SUPER_ADMIN_EMAIL || 'admin@twyz.com';
+const SUPER_ADMIN_PASSWORD = process.env.SUPER_ADMIN_PASSWORD || 'Admin@2026!';
 const SUPER_ADMIN_NAME = process.env.SUPER_ADMIN_NAME || 'Super Administrateur';
 
 async function seedSuperAdmin() {
