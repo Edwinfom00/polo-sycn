@@ -38,12 +38,14 @@ const roleLabels: Record<string, string> = {
     SUPER_ADMIN: 'Super Admin',
     ADMIN: 'Administrateur',
     ETUDIANT: 'Étudiant',
+    DELEGUE: 'Délégué', // Fallback for legacy data
 };
 
 const roleColors: Record<string, string> = {
     SUPER_ADMIN: 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white',
     ADMIN: 'bg-blue-500 text-white',
     ETUDIANT: 'bg-gray-500 text-white',
+    DELEGUE: 'bg-gray-500 text-white', // Fallback for legacy data
 };
 
 export const UserCard = ({ user, onEdit, onDelete }: UserCardProps) => {

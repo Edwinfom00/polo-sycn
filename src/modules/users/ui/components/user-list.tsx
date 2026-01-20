@@ -24,16 +24,18 @@ interface UserListProps {
     onDelete?: () => void;
 }
 
-const roleLabels = {
+const roleLabels: Record<string, string> = {
     SUPER_ADMIN: 'Super Admin',
     ADMIN: 'Administrateur',
     ETUDIANT: 'Étudiant',
+    DELEGUE: 'Délégué', // Fallback for legacy data
 };
 
-const roleColors = {
+const roleColors: Record<string, string> = {
     SUPER_ADMIN: 'bg-gradient-to-r from-yellow-500 to-orange-500',
     ADMIN: 'bg-blue-500',
     ETUDIANT: 'bg-gray-500',
+    DELEGUE: 'bg-gray-500', // Fallback for legacy data
 };
 
 export const UserList = ({ users, onEdit, onDelete }: UserListProps) => {
