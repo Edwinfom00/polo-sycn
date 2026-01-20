@@ -26,7 +26,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-import { userInsertSchema } from "../../schemas";
+import { userInsertSchema, userUpdateSchema } from "../../schemas";
 import { UserGetOne } from "../../types";
 import { createUser, updateUser } from "../../actions";
 import { generatePassword, copyToClipboard } from "@/lib/utils/password-generator";
@@ -47,18 +47,30 @@ export const UserForm = ({
     const [copiedEmail, setCopiedEmail] = useState(false);
     const [generatedCredentials, setGeneratedCredentials] = useState<{ email: string, password: string } | null>(null);
 
-    const form = useForm<z.infer<typeof userInsertSchema>>({
-        resolver: zodResolver(userInsertSchema),
+    const isEdit = !!initialValues?.id;
+
+    // Créer un schéma dynamique basé sur le mode
+    const formSchema = isEdit
+        ? z.object({
+            name: z.string().min(1, "Le nom est requis"),
+            email: z.string().email("Email invalide"),
+            role: z.enum(['SUPER_ADMIN', 'ADMIN', 'DELEGUE', 'ETUDIANT']),
+            classeId: z.string().optional().nullable(),
+            password: z.string().optional(), // Optionnel en mode édition
+        })
+        : userInsertSchema;
+
+    const form = useForm({
+        resolver: zodResolver(formSchema),
         defaultValues: {
             name: initialValues?.name ?? '',
             email: initialValues?.email ?? '',
             password: '',
-            role: initialValues?.role ?? 'DELEGUE', // Par défaut Délégué
+            role: initialValues?.role ?? 'ADMIN',
             classeId: initialValues?.classeId ?? null,
         },
+        mode: 'onChange',
     });
-
-    const isEdit = !!initialValues?.id;
 
     const handleGeneratePassword = () => {
         const newPassword = generatePassword(12);
@@ -67,7 +79,7 @@ export const UserForm = ({
     };
 
     const handleCopyPassword = async () => {
-        const password = form.getValues('password');
+        const password = form.getValues('password') || '';
         const success = await copyToClipboard(password);
         if (success) {
             setCopiedPassword(true);
@@ -102,26 +114,58 @@ export const UserForm = ({
         }
     };
 
-    const onSubmit = (data: z.infer<typeof userInsertSchema>) => {
-        startTransition(async () => {
-            const result = isEdit
-                ? await updateUser({ ...data, id: initialValues?.id })
-                : await createUser(data);
+    const onSubmit = (data: any) => {
+        console.log('=== FORM SUBMIT START ===');
+        console.log('Form submitted with data:', data);
+        console.log('Is edit mode:', isEdit);
+        console.log('Initial values:', initialValues);
 
-            if (result.success) {
-                if (!isEdit) {
-                    // Sauvegarder les identifiants pour pouvoir les copier
-                    setGeneratedCredentials({
-                        email: data.email,
-                        password: data.password,
-                    });
-                }
-                toast.success(result.message);
+        if (isEdit && !initialValues?.id) {
+            console.error('Edit mode but no ID!');
+            toast.error('Erreur: ID utilisateur manquant');
+            return;
+        }
+
+        startTransition(async () => {
+            try {
+                let result;
+
                 if (isEdit) {
-                    onSuccess?.();
+                    // Transform undefined to null for classeId
+                    const updateData = {
+                        id: initialValues?.id,
+                        name: data.name,
+                        email: data.email,
+                        role: data.role,
+                        classeId: data.classeId === undefined ? null : data.classeId
+                    };
+
+                    console.log('Calling updateUser with:', updateData);
+                    result = await updateUser(updateData);
+                } else {
+                    console.log('Calling createUser with:', data);
+                    result = await createUser(data);
                 }
-            } else {
-                toast.error(result.message);
+
+                console.log('Result:', result);
+
+                if (result.success) {
+                    if (!isEdit) {
+                        setGeneratedCredentials({
+                            email: data.email,
+                            password: data.password,
+                        });
+                    }
+                    toast.success(result.message);
+                    if (isEdit) {
+                        onSuccess?.();
+                    }
+                } else {
+                    toast.error(result.message);
+                }
+            } catch (error) {
+                console.error('Submit error:', error);
+                toast.error('Erreur lors de la soumission');
             }
         });
     };
@@ -129,6 +173,10 @@ export const UserForm = ({
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <div className="text-xs text-muted-foreground mb-2">
+                    Mode: {isEdit ? 'Édition' : 'Création'} | ID: {initialValues?.id || 'N/A'}
+                </div>
+
                 <GeneratedAvatar
                     seed={form.watch('name') || "Name"}
                     variant="initials"
@@ -237,8 +285,8 @@ export const UserForm = ({
                                 defaultValue={field.value}
                                 disabled={generatedCredentials !== null}
                             >
-                                <FormControl className="w-full">
-                                    <SelectTrigger>
+                                <FormControl>
+                                    <SelectTrigger className="w-full!">
                                         <SelectValue placeholder="Sélectionner un rôle" />
                                     </SelectTrigger>
                                 </FormControl>
@@ -283,7 +331,11 @@ export const UserForm = ({
                                     Annuler
                                 </Button>
                             )}
-                            <Button type="submit" disabled={isPending} className="w-full sm:w-auto">
+                            <Button
+                                type="submit"
+                                disabled={isPending}
+                                className="w-full sm:w-auto"
+                            >
                                 {isPending ? 'En cours...' : isEdit ? 'Mettre à jour' : 'Créer'}
                             </Button>
                         </>

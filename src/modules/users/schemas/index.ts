@@ -13,7 +13,7 @@ export const userUpdateSchema = z.object({
     name: z.string().min(1, "Le nom est requis").optional(),
     email: z.string().email("Email invalide").optional(),
     role: z.enum(['SUPER_ADMIN', 'ADMIN', 'DELEGUE', 'ETUDIANT']).optional(),
-    classeId: z.string().optional().nullable(),
+    classeId: z.string().nullable().optional(),
 });
 
 export const userDeleteSchema = z.object({

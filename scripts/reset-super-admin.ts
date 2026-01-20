@@ -3,7 +3,7 @@ import { db } from '../src/db';
 import { user, account } from '../src/db/schema';
 import { eq } from 'drizzle-orm';
 
-const SUPER_ADMIN_EMAIL = process.env.SUPER_ADMIN_EMAIL || 'admin@polosync.com';
+const SUPER_ADMIN_EMAIL = process.env.SUPER_ADMIN_EMAIL || 'admin@twyz.com';
 
 async function resetSuperAdmin() {
     try {

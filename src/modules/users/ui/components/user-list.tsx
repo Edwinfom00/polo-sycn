@@ -27,14 +27,12 @@ interface UserListProps {
 const roleLabels = {
     SUPER_ADMIN: 'Super Admin',
     ADMIN: 'Administrateur',
-    DELEGUE: 'Délégué',
     ETUDIANT: 'Étudiant',
 };
 
 const roleColors = {
     SUPER_ADMIN: 'bg-gradient-to-r from-yellow-500 to-orange-500',
     ADMIN: 'bg-blue-500',
-    DELEGUE: 'bg-green-500',
     ETUDIANT: 'bg-gray-500',
 };
 

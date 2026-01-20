@@ -33,7 +33,7 @@ export const UserGrid = ({ users, onEdit, onDelete }: UserGridProps) => {
         return (
             <EmptyState
                 title="Aucun membre du personnel"
-                description="Commencez par créer un administrateur ou un délégué de classe"
+                description="Commencez par créer un administrateur"
                 image="/empty.svg"
             />
         );
