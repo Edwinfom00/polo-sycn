@@ -330,7 +330,7 @@ export const MainDashboardView = ({ userRole, userName }: MainDashboardViewProps
                                 <p className="text-sm text-muted-foreground mb-4">
                                     Commander vos polos universitaires
                                 </p>
-                                <Link href="/orders">
+                                <Link href="super-admin/orders">
                                     <Button className="w-full">
                                         Nouvelle commande
                                     </Button>
@@ -362,7 +362,7 @@ export const MainDashboardView = ({ userRole, userName }: MainDashboardViewProps
                                 <p className="text-sm text-muted-foreground mb-4">
                                     Enregistrer vos paiements
                                 </p>
-                                <Link href="/payments">
+                                <Link href="super-admin/payments">
                                     <Button variant="outline" className="w-full">
                                         Gérer les paiements
                                     </Button>
