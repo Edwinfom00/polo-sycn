@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/select";
 import { OctagonAlertIcon } from 'lucide-react';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 
@@ -46,8 +46,11 @@ const formSchema = z.object({
     filiereId: z.string().min(1, {
         message: 'Sélectionnez votre filière',
     }),
-    classeId: z.string().min(1, {
-        message: 'Sélectionnez votre classe',
+    niveau: z.string().min(1, {
+        message: 'Sélectionnez votre niveau',
+    }),
+    classe: z.string().min(1, {
+        message: 'Entrez votre classe',
     }),
 }).refine(data => data.password === data.confirmPassword, {
     message: 'Les mots de passe ne correspondent pas',
@@ -56,15 +59,13 @@ const formSchema = z.object({
 
 interface SignUpViewProps {
     filieres: any[];
-    classes: any[];
 }
 
-export const SignUpView = ({ filieres, classes }: SignUpViewProps) => {
+export const SignUpView = ({ filieres }: SignUpViewProps) => {
 
     const router = useRouter();
     const [error, setError] = useState<string | null>(null);
     const [pending, setPending] = useState(false);
-    const [filteredClasses, setFilteredClasses] = useState(classes);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -74,20 +75,16 @@ export const SignUpView = ({ filieres, classes }: SignUpViewProps) => {
             password: '',
             confirmPassword: '',
             filiereId: '',
-            classeId: '',
+            niveau: '',
+            classe: '',
         },
     })
 
-    // Filtrer les classes selon la filière sélectionnée
     const filiereId = form.watch('filiereId');
-    useEffect(() => {
-        if (filiereId) {
-            setFilteredClasses(classes.filter(c => c.filiereId === filiereId));
-            form.setValue('classeId', ''); // Reset classe selection
-        } else {
-            setFilteredClasses([]);
-        }
-    }, [filiereId, classes, form]);
+    const niveau = form.watch('niveau');
+
+    // Liste des niveaux disponibles
+    const niveaux = ['L1', 'L2', 'L3', 'M1', 'M2'];
 
     const onSubmit = async (data: z.infer<typeof formSchema>) => {
         setError(null);
@@ -101,14 +98,16 @@ export const SignUpView = ({ filieres, classes }: SignUpViewProps) => {
                 password: data.password,
             });
 
-            // Ensuite mettre à jour la classe de l'utilisateur
+            // Ensuite mettre à jour les informations de classe de l'utilisateur
             const response = await fetch('/api/auth/update-student-class', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    classeId: data.classeId,
+                    filiereId: data.filiereId,
+                    niveau: data.niveau,
+                    classe: data.classe,
                 }),
             });
 
@@ -200,10 +199,10 @@ export const SignUpView = ({ filieres, classes }: SignUpViewProps) => {
                                 <div className="grid gap-3">
                                     <FormField
                                         control={form.control}
-                                        name="classeId"
+                                        name="niveau"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Classe</FormLabel>
+                                                <FormLabel>Niveau</FormLabel>
                                                 <Select
                                                     onValueChange={field.onChange}
                                                     defaultValue={field.value}
@@ -211,19 +210,41 @@ export const SignUpView = ({ filieres, classes }: SignUpViewProps) => {
                                                 >
                                                     <FormControl className="w-full">
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Sélectionnez votre classe" />
+                                                            <SelectValue placeholder="Sélectionnez votre niveau" />
                                                         </SelectTrigger>
                                                     </FormControl>
                                                     <SelectContent>
-                                                        {filteredClasses.map((classe) => (
-                                                            <SelectItem key={classe.id} value={classe.id}>
-                                                                {classe.nom}
+                                                        {niveaux.map((niv) => (
+                                                            <SelectItem key={niv} value={niv}>
+                                                                {niv}
                                                             </SelectItem>
                                                         ))}
                                                     </SelectContent>
                                                 </Select>
                                                 <FormDescription>
                                                     Sélectionnez d&apos;abord votre filière
+                                                </FormDescription>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                <div className="grid gap-3">
+                                    <FormField
+                                        control={form.control}
+                                        name="classe"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Classe</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        placeholder="Ex: Info A, Gestion B, etc."
+                                                        {...field}
+                                                        disabled={!niveau}
+                                                    />
+                                                </FormControl>
+                                                <FormDescription>
+                                                    Entrez le nom de votre classe
                                                 </FormDescription>
                                                 <FormMessage />
                                             </FormItem>

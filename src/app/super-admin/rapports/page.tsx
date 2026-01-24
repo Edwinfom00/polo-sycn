@@ -1,7 +1,7 @@
 import { getRapportComplet, getClassesList, getFilieresList } from "@/modules/rapports/actions";
 import { RapportCompletView } from "@/modules/rapports/ui/views/rapport-complet-view";
 
-export default async function AdminRapportsPage() {
+export default async function SuperAdminRapportsPage() {
     const [rapportResult, classesResult, filieresResult] = await Promise.all([
         getRapportComplet(),
         getClassesList(),

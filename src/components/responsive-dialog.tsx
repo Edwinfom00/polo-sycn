@@ -23,6 +23,7 @@ interface ResponsiveDialogProps {
     children: React.ReactNode;
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    maxWidth?: string;
 }
 
 export const ResponsiveDialog = ({
@@ -31,6 +32,7 @@ export const ResponsiveDialog = ({
     children,
     open,
     onOpenChange,
+    maxWidth = "max-w-lg",
 }: ResponsiveDialogProps) => {
     const isMobile = useIsMobile();
 
@@ -52,7 +54,7 @@ export const ResponsiveDialog = ({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
+            <DialogContent className={`${maxWidth} max-h-[90vh] overflow-y-auto`}>
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                     <DialogDescription>{description}</DialogDescription>
