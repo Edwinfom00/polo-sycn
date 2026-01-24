@@ -235,7 +235,7 @@ export const MainDashboardView = ({ userRole, userName }: MainDashboardViewProps
                                 <p className="text-sm text-muted-foreground mb-4">
                                     {stats?.commandes.enAttente || 0} commandes à traiter
                                 </p>
-                                <Link href="/orders">
+                                <Link href="super-admin/orders">
                                     <Button className="w-full">
                                         Voir les commandes
                                     </Button>
@@ -251,7 +251,7 @@ export const MainDashboardView = ({ userRole, userName }: MainDashboardViewProps
                                 <p className="text-sm text-muted-foreground mb-4">
                                     {stats?.paiements.enAttente || 0} paiements en attente
                                 </p>
-                                <Link href="/payments">
+                                <Link href="super-admin/payments">
                                     <Button className="w-full">
                                         Valider les paiements
                                     </Button>
