@@ -8,6 +8,7 @@ import {
     PackageIcon,
     BarChartIcon,
     UsersIcon,
+    PackageMinusIcon,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -57,6 +58,11 @@ const operationsMenu = [
         icon: PackageIcon,
         label: "Stock",
         href: "/admin/stock"
+    },
+    {
+        icon: PackageMinusIcon,
+        label: "Sorties",
+        href: "/admin/sorties"
     },
     {
         icon: UsersIcon,

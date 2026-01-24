@@ -8,7 +8,9 @@ import {
     TruckIcon,
     BarChartIcon,
     SettingsIcon,
-    GraduationCapIcon
+    GraduationCapIcon,
+    PackageMinusIcon,
+    FileBarChartIcon
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -56,6 +58,11 @@ const adminMenu = [
         label: "Produits & Stock",
         href: "/super-admin/admin/products"
     },
+    {
+        icon: PackageMinusIcon,
+        label: "Sorties de Stock",
+        href: "/super-admin/admin/sorties"
+    },
 ];
 
 const operationsMenu = [
@@ -78,6 +85,11 @@ const operationsMenu = [
         icon: UsersIcon,
         label: "Étudiants",
         href: "/super-admin/etudiants"
+    },
+    {
+        icon: FileBarChartIcon,
+        label: "Rapports",
+        href: "/super-admin/rapports"
     },
 ];
 

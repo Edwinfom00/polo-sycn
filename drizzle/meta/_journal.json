@@ -15,6 +15,20 @@
       "when": 1768432504182,
       "tag": "0001_round_monster_badoon",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1769210643457,
+      "tag": "0002_workable_gorilla_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1769212231760,
+      "tag": "0003_fine_betty_brant",
+      "breakpoints": true
     }
   ]
 }
